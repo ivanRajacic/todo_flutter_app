@@ -11,8 +11,8 @@ class _information_entryState extends State<information_entry> {
   String dropdownValue = "High";
   List<String> _priorityList = ["High", "Medium", "Low"];
 
-  void addCard() {
-    Navigator.pop(context, "yea");
+  void popOut() {
+    Navigator.pop(context, "test");
   }
 
   final myControllerName = TextEditingController();
@@ -66,7 +66,7 @@ class _information_entryState extends State<information_entry> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    addCard();
+                    popOut();
                   },
                   child: const Text('Add'),
                 ),

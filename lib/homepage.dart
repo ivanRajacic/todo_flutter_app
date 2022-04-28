@@ -8,13 +8,17 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  Future<void> addCard() async {
+    final result = await Navigator.pushNamed(context, "/add");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //glavni container
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add');
+          addCard();
         },
         tooltip: 'Add Card',
         child: Icon(Icons.add),
