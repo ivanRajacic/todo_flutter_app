@@ -30,6 +30,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
           )
         ],
       ),
+      const Spacer(),
       Checkbox(
         value: isChecked,
         onChanged: (bool? value) {
