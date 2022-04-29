@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
+import 'add_todo_page.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomepageState extends State<Homepage> {
-  Future<void> addCard() async {
-    final result = await Navigator.pushNamed(context, "/add");
-  }
-
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    //implementirat kartice
+    // List<Cards> cardList = [];
+    InfromationData result;
+    void addCard() async {
+      result = await Navigator.pushNamed(context, '/add') as InfromationData;
+    }
+
     return Scaffold(
       //glavni container
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          addCard();
-        },
+        onPressed: () => addCard(),
         tooltip: 'Add Card',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text("My Tasks"),
-                Text("Counter"),
+              children: const [
+                Text('My Tasks'),
+                Text('Counter'),
               ],
             ),
             // Container(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo_flutter_app/homepage.dart';
-import 'package:todo_flutter_app/information_entry.dart';
+import 'home_page.dart';
+import 'add_todo_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Homepage(),
+      home: HomePage(),
       routes: {
-        '/add': (context) => information_entry(),
+        '/home': (context) => HomePage(),
+        '/add': (context) => AddTodoPage(),
       },
     );
   }

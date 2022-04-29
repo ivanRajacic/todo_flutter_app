@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
 
-class information_entry extends StatefulWidget {
-  const information_entry({Key? key}) : super(key: key);
+class AddTodoPage extends StatefulWidget {
+  const AddTodoPage({Key? key}) : super(key: key);
 
   @override
-  State<information_entry> createState() => _information_entryState();
+  State<AddTodoPage> createState() => _AddTodoPageState();
 }
 
-class _information_entryState extends State<information_entry> {
-  String dropdownValue = "High";
-  List<String> _priorityList = ["High", "Medium", "Low"];
+class InfromationData {
+  final String title;
+  final String date;
+  final String priority;
+
+  InfromationData(this.title, this.date, this.priority);
+}
+
+class _AddTodoPageState extends State<AddTodoPage> {
+  String _selectedPriority = 'High';
+  final List<String> _priorityList = ['High', 'Medium', 'Low'];
+
+  final _nameController = TextEditingController();
+  final _dateController = TextEditingController();
 
   void popOut() {
-    Navigator.pop(context, "test");
+    InfromationData data = InfromationData(
+        _nameController.text, _dateController.text, _selectedPriority);
+    _nameController.dispose();
+    _dateController.dispose();
+    Navigator.pop(context, data);
   }
-
-  final myControllerName = TextEditingController();
-  final myControllerDate = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,26 +36,26 @@ class _information_entryState extends State<information_entry> {
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(children: [
             Column(
               children: [
-                BackButton(),
-                Text("Add Task"),
+                const BackButton(),
+                const Text('Add Task'),
                 TextField(
-                  controller: myControllerName,
+                  controller: _nameController,
                   decoration: InputDecoration(
-                    hintText: "Title",
+                    hintText: 'Title',
                   ),
                 ),
                 TextField(
-                  controller: myControllerDate,
+                  controller: _dateController,
                   decoration: InputDecoration(
-                    hintText: "Date",
+                    hintText: 'Date',
                   ),
                 ),
                 DropdownButton<String>(
-                  value: dropdownValue,
+                  value: _selectedPriority,
                   icon: const Icon(Icons.arrow_downward),
                   elevation: 16,
                   style: const TextStyle(color: Colors.deepPurple),
@@ -53,7 +65,7 @@ class _information_entryState extends State<information_entry> {
                   ),
                   onChanged: (String? newValue) {
                     setState(() {
-                      dropdownValue = newValue!;
+                      _selectedPriority = newValue!;
                     });
                   },
                   items: _priorityList
