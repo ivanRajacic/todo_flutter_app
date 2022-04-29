@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_todo_page.dart';
+import 'todo_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,13 +10,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<InfromationData> todoCardListInformation = [];
+
   @override
   Widget build(BuildContext context) {
     //implementirat kartice
-    // List<Cards> cardList = [];
-    InfromationData result;
     void addCard() async {
-      result = await Navigator.pushNamed(context, '/add') as InfromationData;
+      final result =
+          await Navigator.pushNamed(context, '/add') as InfromationData;
+      setState(() {
+        todoCardListInformation.add(result);
+      });
     }
 
     return Scaffold(
@@ -37,19 +42,26 @@ class _HomePageState extends State<HomePage> {
                 Text('Counter'),
               ],
             ),
-            // Container(
-            //   child: Flexible(
-            //     child: ListView.builder(
-            //       scrollDirection: Axis.vertical,
-            //       itemCount: _cardlist.length,
-            //       itemBuilder: (context, index) {
-            //         return Container(
-            //           child: Text(_cardlist[index]),
-            //         );
-            //       },
-            //     ),
-            //   ),
-            // ),
+            Flexible(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: todoCardListInformation.length,
+                itemBuilder: (context, index) {
+                  final InfromationData item = todoCardListInformation[index];
+                  return TodoCardWidget(
+                    title: item.title,
+                    date: item.date,
+                    priority: item.priority,
+                  );
+                },
+              ),
+            ),
+            const Text('notest')
+            // const TodoCardWidget(
+            //   title: 'test',
+            //   date: 'test',
+            //   priority: 'test',
+            // )
           ]),
         ),
       ),
