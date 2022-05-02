@@ -5,12 +5,14 @@ class TodoCardWidget extends StatefulWidget {
   final String date;
   final String priority;
   final Function? callback;
+  final Function? deleteCallback;
   const TodoCardWidget(
       {Key? key,
       this.title = 'title',
       this.date = 'date',
       this.priority = 'priority',
-      this.callback})
+      this.callback,
+      this.deleteCallback})
       : super(key: key);
 
   @override
@@ -72,6 +74,18 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
           });
         },
       ),
+      IconButton(
+          onPressed: () {
+            setState(() {
+              if (widget.deleteCallback != null) {
+                widget.deleteCallback!(widget.key);
+              }
+            });
+          },
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ))
     ]);
   }
 }

@@ -11,22 +11,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<TodoCardData> todoCardListInformation = [];
+  List<TodoCardWidget> todoCardList = [];
   int cardCounter = 0;
   int completedCardCounter = 0;
 
   @override
   Widget build(BuildContext context) {
-    void addCard() async {
-      final result = await Navigator.pushNamed(context, '/add');
-      if (result != null) {
-        TodoCardData data = result as TodoCardData;
-        setState(() {
-          todoCardListInformation.add(data);
-          cardCounter = todoCardListInformation.length;
-        });
-      }
-    }
-
     void updateCompletedCardCounter(bool isChanged) {
       setState(() {
         if (isChanged) {
@@ -35,6 +25,36 @@ class _HomePageState extends State<HomePage> {
           completedCardCounter--;
         }
       });
+    }
+
+    void deleteCard(Key key) {
+      setState(() {
+        for (var i = 0; i < todoCardList.length; i++) {
+          if (todoCardList[i].key == key) {
+            todoCardList.remove(todoCardList[i]);
+            cardCounter = todoCardList.length;
+          }
+        }
+      });
+    }
+
+    void addCard() async {
+      final result = await Navigator.pushNamed(context, '/add');
+      if (result != null) {
+        final TodoCardData data = result as TodoCardData;
+        setState(() {
+          todoCardList.add(TodoCardWidget(
+            title: data.title,
+            date: data.date,
+            priority: data.priority,
+            callback: updateCompletedCardCounter,
+            deleteCallback: deleteCard,
+            key: UniqueKey(),
+          ));
+          // todoCardListInformation.add(data);
+          cardCounter = todoCardList.length;
+        });
+      }
     }
 
     return Scaffold(
@@ -74,20 +94,15 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Flexible(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: todoCardListInformation.length,
-                itemBuilder: (context, index) {
-                  final TodoCardData item = todoCardListInformation[index];
-                  return TodoCardWidget(
-                    title: item.title,
-                    date: item.date,
-                    priority: item.priority,
-                    callback: updateCompletedCardCounter,
-                  );
-                },
-              ),
-            ),
+                child: todoCardList.isNotEmpty
+                    ? ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: todoCardList.length,
+                        itemBuilder: (context, index) {
+                          return todoCardList[index];
+                        },
+                      )
+                    : const Text('No todo\'s')),
           ]),
         ),
       ),
