@@ -25,9 +25,15 @@ class _AddTodoPageState extends State<AddTodoPage> {
   void popOut() {
     InfromationData data = InfromationData(
         _nameController.text, _dateController.text, _selectedPriority);
-    // _nameController.dispose();
-    // _dateController.dispose();
+
     Navigator.pop(context, data);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dateController.dispose();
+    super.dispose();
   }
 
   @override
