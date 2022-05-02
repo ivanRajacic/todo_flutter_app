@@ -4,11 +4,13 @@ class TodoCardWidget extends StatefulWidget {
   final String title;
   final String date;
   final String priority;
-  const TodoCardWidget(
+  Function? callback;
+  TodoCardWidget(
       {Key? key,
       this.title = 'title',
       this.date = 'date',
-      this.priority = 'priority'})
+      this.priority = 'priority',
+      this.callback})
       : super(key: key);
 
   @override
@@ -16,7 +18,7 @@ class TodoCardWidget extends StatefulWidget {
 }
 
 class _TodoCardWidgetState extends State<TodoCardWidget> {
-  bool _isChecked = false;
+  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +31,12 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
               Text(
                 widget.date,
                 style: TextStyle(
-                  decoration: _isChecked ? TextDecoration.lineThrough : null,
+                  decoration: isChecked ? TextDecoration.lineThrough : null,
                 ),
               ),
               Text(widget.priority,
                   style: TextStyle(
-                    decoration: _isChecked ? TextDecoration.lineThrough : null,
+                    decoration: isChecked ? TextDecoration.lineThrough : null,
                   ))
             ],
           )
@@ -42,10 +44,13 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
       ),
       const Spacer(),
       Checkbox(
-        value: _isChecked,
+        value: isChecked,
         onChanged: (bool? value) {
           setState(() {
-            _isChecked = value!;
+            isChecked = value!;
+            if (widget.callback != null) {
+              widget.callback!(isChecked);
+            }
           });
         },
       ),

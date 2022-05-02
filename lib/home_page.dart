@@ -11,6 +11,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<InfromationData> todoCardListInformation = [];
+  int cardCounter = 0;
+  int completedCardCounter = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,17 @@ class _HomePageState extends State<HomePage> {
           await Navigator.pushNamed(context, '/add') as InfromationData;
       setState(() {
         todoCardListInformation.add(result);
+        cardCounter = todoCardListInformation.length;
+      });
+    }
+
+    void updateCompletedCardCounter(bool isChanged) {
+      setState(() {
+        if (isChanged) {
+          completedCardCounter++;
+        } else {
+          completedCardCounter--;
+        }
       });
     }
 
@@ -37,9 +50,9 @@ class _HomePageState extends State<HomePage> {
           child: Column(children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: const [
-                Text('My Tasks'),
-                Text('Counter'),
+              children: [
+                const Text('My Tasks'),
+                Text('$completedCardCounter' 'of' '$cardCounter'),
               ],
             ),
             Flexible(
@@ -52,6 +65,7 @@ class _HomePageState extends State<HomePage> {
                     title: item.title,
                     date: item.date,
                     priority: item.priority,
+                    callback: updateCompletedCardCounter,
                   );
                 },
               ),
