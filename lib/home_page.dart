@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'add_todo_page.dart';
 import 'todo_card_widget.dart';
@@ -11,17 +10,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<InfromationData> todoCardListInformation = [];
+  List<TodoCardData> todoCardListInformation = [];
   int cardCounter = 0;
   int completedCardCounter = 0;
 
   @override
   Widget build(BuildContext context) {
-    //implementirat kartice
     void addCard() async {
       final result = await Navigator.pushNamed(context, '/add');
       if (result != null) {
-        InfromationData data = result as InfromationData;
+        TodoCardData data = result as TodoCardData;
         setState(() {
           todoCardListInformation.add(data);
           cardCounter = todoCardListInformation.length;
@@ -80,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.vertical,
                 itemCount: todoCardListInformation.length,
                 itemBuilder: (context, index) {
-                  final InfromationData item = todoCardListInformation[index];
+                  final TodoCardData item = todoCardListInformation[index];
                   return TodoCardWidget(
                     title: item.title,
                     date: item.date,
@@ -90,11 +88,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            // const TodoCardWidget(
-            //   title: 'test',
-            //   date: 'test',
-            //   priority: 'test',
-            // )
           ]),
         ),
       ),

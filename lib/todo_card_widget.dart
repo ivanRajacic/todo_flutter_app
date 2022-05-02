@@ -4,8 +4,8 @@ class TodoCardWidget extends StatefulWidget {
   final String title;
   final String date;
   final String priority;
-  Function? callback;
-  TodoCardWidget(
+  final Function? callback;
+  const TodoCardWidget(
       {Key? key,
       this.title = 'title',
       this.date = 'date',
