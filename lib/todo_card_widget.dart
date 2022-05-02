@@ -24,21 +24,39 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
   Widget build(BuildContext context) {
     return Row(children: [
       Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(widget.title),
-          Row(
-            children: [
-              Text(
-                widget.date,
-                style: TextStyle(
-                  decoration: isChecked ? TextDecoration.lineThrough : null,
-                ),
-              ),
-              Text(widget.priority,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Text(
+              widget.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Text(
+                  widget.date,
                   style: TextStyle(
-                    decoration: isChecked ? TextDecoration.lineThrough : null,
-                  ))
-            ],
+                      decoration: isChecked ? TextDecoration.lineThrough : null,
+                      color: Colors.grey),
+                ),
+                Text(
+                  ' * ',
+                  style: TextStyle(
+                      decoration: isChecked ? TextDecoration.lineThrough : null,
+                      color: Colors.grey),
+                ),
+                Text(widget.priority,
+                    style: TextStyle(
+                        decoration:
+                            isChecked ? TextDecoration.lineThrough : null,
+                        color: Colors.grey))
+              ],
+            ),
           )
         ],
       ),

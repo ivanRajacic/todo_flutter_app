@@ -22,7 +22,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
   final _nameController = TextEditingController();
   final _dateController = TextEditingController();
 
-  void popOut() {
+  void passCardData() {
     InfromationData data = InfromationData(
         _nameController.text, _dateController.text, _selectedPriority);
 
@@ -84,7 +84,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    popOut();
+                    passCardData();
                   },
                   child: const Text('Add'),
                 ),

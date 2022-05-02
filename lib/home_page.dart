@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'add_todo_page.dart';
 import 'todo_card_widget.dart';
@@ -18,12 +19,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     //implementirat kartice
     void addCard() async {
-      final result =
-          await Navigator.pushNamed(context, '/add') as InfromationData;
-      setState(() {
-        todoCardListInformation.add(result);
-        cardCounter = todoCardListInformation.length;
-      });
+      final result = await Navigator.pushNamed(context, '/add');
+      if (result != null) {
+        InfromationData data = result as InfromationData;
+        setState(() {
+          todoCardListInformation.add(data);
+          cardCounter = todoCardListInformation.length;
+        });
+      }
     }
 
     void updateCompletedCardCounter(bool isChanged) {
@@ -42,18 +45,35 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => addCard(),
         tooltip: 'Add Card',
         child: const Icon(Icons.add),
+        backgroundColor: Colors.red,
       ),
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(40.0),
           child: Column(children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text('My Tasks'),
-                Text('$completedCardCounter' 'of' '$cardCounter'),
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      'My Tasks',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      '$completedCardCounter' ' of ' '$cardCounter',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Flexible(
               child: ListView.builder(
@@ -70,7 +90,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            const Text('notest')
             // const TodoCardWidget(
             //   title: 'test',
             //   date: 'test',
