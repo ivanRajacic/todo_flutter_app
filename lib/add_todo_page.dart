@@ -50,13 +50,13 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 const Text('Add Task'),
                 TextField(
                   controller: _nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Title',
                   ),
                 ),
                 TextField(
                   controller: _dateController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Date',
                   ),
                 ),

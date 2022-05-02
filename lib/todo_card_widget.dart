@@ -16,7 +16,7 @@ class TodoCardWidget extends StatefulWidget {
 }
 
 class _TodoCardWidgetState extends State<TodoCardWidget> {
-  bool isChecked = false;
+  bool _isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +25,27 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
         children: [
           Text(widget.title),
           Row(
-            children: [Text(widget.date), Text(widget.priority)],
+            children: [
+              Text(
+                widget.date,
+                style: TextStyle(
+                  decoration: _isChecked ? TextDecoration.lineThrough : null,
+                ),
+              ),
+              Text(widget.priority,
+                  style: TextStyle(
+                    decoration: _isChecked ? TextDecoration.lineThrough : null,
+                  ))
+            ],
           )
         ],
       ),
       const Spacer(),
       Checkbox(
-        value: isChecked,
+        value: _isChecked,
         onChanged: (bool? value) {
           setState(() {
-            isChecked = value!;
+            _isChecked = value!;
           });
         },
       ),
