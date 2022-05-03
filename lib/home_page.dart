@@ -15,48 +15,50 @@ class _HomePageState extends State<HomePage> {
   int cardCounter = 0;
   int completedCardCounter = 0;
 
-  @override
-  Widget build(BuildContext context) {
-    void updateCompletedCardCounter(bool isChanged) {
-      setState(() {
-        if (isChanged) {
-          completedCardCounter++;
-        } else {
-          completedCardCounter--;
-        }
-      });
-    }
+  void updateCompletedCardCounter(bool isChecked) {
+    setState(() {
+      if (isChecked) {
+        completedCardCounter++;
+      } else {
+        completedCardCounter--;
+      }
+    });
+  }
 
-    void deleteCard(Key key) {
-      setState(() {
-        for (var i = 0; i < todoCardList.length; i++) {
-          if (todoCardList[i].key == key) {
-            todoCardList.remove(todoCardList[i]);
-            cardCounter = todoCardList.length;
-          }
-        }
-      });
-    }
-
-    void addCard() async {
-      final result = await Navigator.pushNamed(context, '/add');
-      if (result != null) {
-        final TodoCardData data = result as TodoCardData;
+  void deleteCard(Key key, bool isChecked) {
+    for (var i = 0; i < todoCardList.length; i++) {
+      if (todoCardList[i].key == key) {
         setState(() {
-          todoCardList.add(TodoCardWidget(
-            title: data.title,
-            date: data.date,
-            priority: data.priority,
-            callback: updateCompletedCardCounter,
-            deleteCallback: deleteCard,
-            key: UniqueKey(),
-          ));
-          // todoCardListInformation.add(data);
+          todoCardList.remove(todoCardList[i]);
           cardCounter = todoCardList.length;
         });
+        if (isChecked) {
+          completedCardCounter--;
+        }
       }
     }
+  }
 
+  void addCard() async {
+    final result = await Navigator.pushNamed(context, '/add');
+    if (result != null) {
+      final TodoCardData data = result as TodoCardData;
+      setState(() {
+        todoCardList.add(TodoCardWidget(
+          title: data.title,
+          date: data.date,
+          priority: data.priority,
+          callback: updateCompletedCardCounter,
+          deleteCallback: deleteCard,
+          key: UniqueKey(),
+        ));
+        cardCounter = todoCardList.length;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       //glavni container
       floatingActionButton: FloatingActionButton(

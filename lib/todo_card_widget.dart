@@ -22,6 +22,50 @@ class TodoCardWidget extends StatefulWidget {
 class _TodoCardWidgetState extends State<TodoCardWidget> {
   bool isChecked = false;
 
+  _promptDeleteCardDialog(BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:
+                const Text('Are you sure you want to delete this todo card?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    if (widget.deleteCallback != null) {
+                      widget.deleteCallback!(widget.key, isChecked);
+                    }
+                  });
+                  Navigator.pop(context);
+                  const snackBar = SnackBar(
+                    content: Text('Todo card deleted successfully!'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 17.0,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'No',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 17.0,
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(children: [
@@ -75,13 +119,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
         },
       ),
       IconButton(
-          onPressed: () {
-            setState(() {
-              if (widget.deleteCallback != null) {
-                widget.deleteCallback!(widget.key);
-              }
-            });
-          },
+          onPressed: () => _promptDeleteCardDialog(context),
           icon: const Icon(
             Icons.delete,
             color: Colors.red,
