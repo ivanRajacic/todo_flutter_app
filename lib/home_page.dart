@@ -14,15 +14,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   HashMap allTodoCardMap = HashMap<TodoCardWidget, bool>();
   List<TodoCardWidget> workingTodoCardList = [];
+  String filterStatus = 'All';
 
   int cardCounter = 0;
   int completedCardCounter = 0;
 
   bool getCardCheckStatus(Key key) {
-    TodoCardWidget temp =
-        allTodoCardMap.keys.firstWhere((element) => element.key == key);
+    bool returnValue = false;
+    allTodoCardMap.forEach((k, v) {
+      if (k.key == key) {
+        returnValue = v;
+        // return v;
+      }
+    });
 
-    return allTodoCardMap[temp];
+    return returnValue;
   }
 
   void updateCompletedCardCounter(Key key, bool isChecked) {
@@ -47,6 +53,11 @@ class _HomePageState extends State<HomePage> {
     workingTodoCardList.clear();
     if (shouldFilterCards == true) {
       setState(() {
+        if (filterCondition) {
+          filterStatus = 'Completed';
+        } else {
+          filterStatus = 'Active';
+        }
         workingTodoCardList = (Map.from(allTodoCardMap)
               ..removeWhere((k, v) => v != filterCondition))
             .keys
@@ -55,6 +66,7 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       setState(() {
+        filterStatus = 'All';
         workingTodoCardList =
             allTodoCardMap.keys.toList() as List<TodoCardWidget>;
       });
@@ -67,12 +79,14 @@ class _HomePageState extends State<HomePage> {
     for (var i = 0; i < tempTodoCardList.length; i++) {
       if (tempTodoCardList[i].key == key) {
         setState(() {
+          if (isChecked) {
+            completedCardCounter--;
+          }
           allTodoCardMap.remove(tempTodoCardList[i]);
           cardCounter = allTodoCardMap.length;
+          workingTodoCardList =
+              allTodoCardMap.keys.toList() as List<TodoCardWidget>;
         });
-        if (isChecked) {
-          completedCardCounter--;
-        }
       }
     }
   }
@@ -141,21 +155,30 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             TextButton(
                                 onPressed: () => filterTodoCards(false, false),
-                                child: const Text(
+                                child: Text(
                                   'All',
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                      color: filterStatus == 'All'
+                                          ? Colors.red
+                                          : Colors.black),
                                 )),
                             TextButton(
                                 onPressed: () => filterTodoCards(true, false),
-                                child: const Text(
+                                child: Text(
                                   'Active',
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                      color: filterStatus == 'Active'
+                                          ? Colors.red
+                                          : Colors.black),
                                 )),
                             TextButton(
                                 onPressed: () => filterTodoCards(true, true),
-                                child: const Text(
+                                child: Text(
                                   'Completed',
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                      color: filterStatus == 'Completed'
+                                          ? Colors.red
+                                          : Colors.black),
                                 )),
                           ],
                         ),
