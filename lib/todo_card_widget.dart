@@ -6,13 +6,15 @@ class TodoCardWidget extends StatefulWidget {
   final String priority;
   final Function? callback;
   final Function? deleteCallback;
+  final Function? checkStatusCallback;
   const TodoCardWidget(
       {Key? key,
       this.title = 'title',
       this.date = 'date',
       this.priority = 'priority',
       this.callback,
-      this.deleteCallback})
+      this.deleteCallback,
+      this.checkStatusCallback})
       : super(key: key);
 
   @override
@@ -20,8 +22,6 @@ class TodoCardWidget extends StatefulWidget {
 }
 
 class _TodoCardWidgetState extends State<TodoCardWidget> {
-  bool isChecked = false;
-
   _promptDeleteCardDialog(BuildContext context) async {
     showDialog(
         context: context,
@@ -34,7 +34,8 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 onPressed: () {
                   setState(() {
                     if (widget.deleteCallback != null) {
-                      widget.deleteCallback!(widget.key, isChecked);
+                      widget.deleteCallback!(
+                          widget.key, widget.checkStatusCallback!(widget.key));
                     }
                   });
                   Navigator.pop(context);
@@ -87,19 +88,24 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 Text(
                   widget.date,
                   style: TextStyle(
-                      decoration: isChecked ? TextDecoration.lineThrough : null,
+                      decoration: widget.checkStatusCallback!(widget.key)
+                          ? TextDecoration.lineThrough
+                          : null,
                       color: Colors.grey),
                 ),
                 Text(
                   ' * ',
                   style: TextStyle(
-                      decoration: isChecked ? TextDecoration.lineThrough : null,
+                      decoration: widget.checkStatusCallback!(widget.key)
+                          ? TextDecoration.lineThrough
+                          : null,
                       color: Colors.grey),
                 ),
                 Text(widget.priority,
                     style: TextStyle(
-                        decoration:
-                            isChecked ? TextDecoration.lineThrough : null,
+                        decoration: widget.checkStatusCallback!(widget.key)
+                            ? TextDecoration.lineThrough
+                            : null,
                         color: Colors.grey))
               ],
             ),
@@ -108,12 +114,11 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
       ),
       const Spacer(),
       Checkbox(
-        value: isChecked,
+        value: widget.checkStatusCallback!(widget.key),
         onChanged: (bool? value) {
           setState(() {
-            isChecked = value!;
             if (widget.callback != null) {
-              widget.callback!(isChecked);
+              widget.callback!(widget.key, value);
             }
           });
         },
