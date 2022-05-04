@@ -78,7 +78,10 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Text(
               widget.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ),
           Padding(
@@ -88,25 +91,30 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 Text(
                   widget.date,
                   style: TextStyle(
-                      decoration: widget.checkStatusCallback!(widget.key)
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: Colors.grey),
+                    decoration: widget.checkStatusCallback!(widget.key)
+                        ? TextDecoration.lineThrough
+                        : null,
+                    color: Colors.grey,
+                  ),
                 ),
                 Text(
                   ' * ',
                   style: TextStyle(
-                      decoration: widget.checkStatusCallback!(widget.key)
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: Colors.grey),
+                    decoration: widget.checkStatusCallback!(widget.key)
+                        ? TextDecoration.lineThrough
+                        : null,
+                    color: Colors.grey,
+                  ),
                 ),
-                Text(widget.priority,
-                    style: TextStyle(
-                        decoration: widget.checkStatusCallback!(widget.key)
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: Colors.grey))
+                Text(
+                  widget.priority,
+                  style: TextStyle(
+                    decoration: widget.checkStatusCallback!(widget.key)
+                        ? TextDecoration.lineThrough
+                        : null,
+                    color: Colors.grey,
+                  ),
+                )
               ],
             ),
           )
@@ -124,11 +132,12 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
         },
       ),
       IconButton(
-          onPressed: () => _promptDeleteCardDialog(context),
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.red,
-          ))
+        onPressed: () => _promptDeleteCardDialog(context),
+        icon: const Icon(
+          Icons.delete,
+          color: Colors.red,
+        ),
+      )
     ]);
   }
 }

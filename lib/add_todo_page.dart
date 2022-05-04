@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'todo.dart';
+
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({Key? key}) : super(key: key);
 
@@ -7,26 +9,18 @@ class AddTodoPage extends StatefulWidget {
   State<AddTodoPage> createState() => _AddTodoPageState();
 }
 
-class TodoCardData {
-  final String title;
-  final String date;
-  final String priority;
-
-  TodoCardData(this.title, this.date, this.priority);
-}
-
 class _AddTodoPageState extends State<AddTodoPage> {
   String? _selectedPriority;
   DateTime? _selectedDate;
-  final List<String> _priorityList = ['High', 'Medium', 'Low'];
+  final List<String> _priorities = ['High', 'Medium', 'Low'];
 
   final _nameController = TextEditingController();
   final _dateController = TextEditingController();
 
   void passCardData() {
     if (_selectedPriority != null) {
-      TodoCardData data = TodoCardData(
-          _nameController.text, _dateController.text, _selectedPriority!);
+      Todo data =
+          Todo(_nameController.text, _dateController.text, _selectedPriority!);
       Navigator.pop(context, data);
     }
   }
@@ -56,8 +50,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
                       child: IconButton(
                         onPressed: () => Navigator.pop(context),
-                        icon:
-                            const Icon(Icons.arrow_back_ios, color: Colors.red),
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ],
@@ -69,7 +65,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       child: Text(
                         'Add Task',
                         style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -79,15 +77,20 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   child: TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                        hintText: 'Enter the title of the todo task',
-                        labelText: 'Title',
-                        labelStyle: const TextStyle(color: Colors.grey),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.red),
-                          borderRadius: BorderRadius.circular(10.0),
-                        )),
+                      hintText: 'Enter the title of the todo task',
+                      labelText: 'Title',
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
                   ),
                 ),
                 Padding(
@@ -109,15 +112,20 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       });
                     },
                     decoration: InputDecoration(
-                        hintText: 'Date',
-                        labelText: 'Date',
-                        labelStyle: const TextStyle(color: Colors.grey),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.red),
-                          borderRadius: BorderRadius.circular(10.0),
-                        )),
+                      hintText: 'Date',
+                      labelText: 'Date',
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0)),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
                   ),
                 ),
                 Column(
@@ -127,13 +135,18 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: InputDecorator(
                         decoration: InputDecoration(
-                            hintText: 'Priority',
-                            labelText: 'Priority',
-                            labelStyle: const TextStyle(color: Colors.grey),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide:
-                                    const BorderSide(color: Colors.grey))),
+                          hintText: 'Priority',
+                          labelText: 'Priority',
+                          labelStyle: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _selectedPriority,
@@ -149,7 +162,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                                 _selectedPriority = newValue ?? '';
                               });
                             },
-                            items: _priorityList
+                            items: _priorities
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
@@ -166,17 +179,17 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         width: double.infinity,
                         height: 60.0,
                         child: ElevatedButton(
-                          onPressed: () {
-                            passCardData();
-                          },
+                          onPressed: passCardData,
                           style: ElevatedButton.styleFrom(
                               primary: Colors.red,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30.0))),
                           child: const Text(
                             'Add',
-                            style:
-                                TextStyle(fontSize: 20.0, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
