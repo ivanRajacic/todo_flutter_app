@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
     allTodoCardMap.forEach((k, v) {
       if (k.key == key) {
         returnValue = v;
-        // return v;
       }
     });
 
@@ -35,14 +34,18 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (isChecked) {
         completedCardCounter++;
-        TodoCardWidget temp =
-            allTodoCardMap.keys.firstWhere((element) => element.key == key);
-        allTodoCardMap.update(temp, (value) => true);
+        allTodoCardMap.forEach((k, v) {
+          if (k.key == key) {
+            allTodoCardMap.update(k, (value) => true);
+          }
+        });
       } else {
         completedCardCounter--;
-        TodoCardWidget temp =
-            allTodoCardMap.keys.firstWhere((element) => element.key == key);
-        allTodoCardMap.update(temp, (value) => false);
+        allTodoCardMap.forEach((k, v) {
+          if (k.key == key) {
+            allTodoCardMap.update(k, (value) => false);
+          }
+        });
       }
       workingTodoCardList =
           allTodoCardMap.keys.toList() as List<TodoCardWidget>;
@@ -52,12 +55,12 @@ class _HomePageState extends State<HomePage> {
   void filterTodoCards(bool shouldFilterCards, bool filterCondition) {
     workingTodoCardList.clear();
     if (shouldFilterCards == true) {
+      if (filterCondition) {
+        filterStatus = 'Completed';
+      } else {
+        filterStatus = 'Active';
+      }
       setState(() {
-        if (filterCondition) {
-          filterStatus = 'Completed';
-        } else {
-          filterStatus = 'Active';
-        }
         workingTodoCardList = (Map.from(allTodoCardMap)
               ..removeWhere((k, v) => v != filterCondition))
             .keys
@@ -194,9 +197,6 @@ class _HomePageState extends State<HomePage> {
                         scrollDirection: Axis.vertical,
                         itemCount: workingTodoCardList.length,
                         itemBuilder: (context, index) {
-                          // List<TodoCardWidget> tempTodoCardList =
-                          //     allTodoCardMap.keys.toList()
-                          //         as List<TodoCardWidget>;
                           return workingTodoCardList[index];
                         },
                       )

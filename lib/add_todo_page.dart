@@ -17,6 +17,7 @@ class TodoCardData {
 
 class _AddTodoPageState extends State<AddTodoPage> {
   String? _selectedPriority;
+  DateTime? _selectedDate;
   final List<String> _priorityList = ['High', 'Medium', 'Low'];
 
   final _nameController = TextEditingController();
@@ -78,7 +79,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   child: TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                        hintText: 'Title',
+                        hintText: 'Enter the title of the todo task',
+                        labelText: 'Title',
+                        labelStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         focusedBorder: OutlineInputBorder(
@@ -91,8 +94,24 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextField(
                     controller: _dateController,
+                    readOnly: true,
+                    onTap: () async {
+                      _selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate == null
+                              ? DateTime.now()
+                              : _selectedDate!,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2030));
+
+                      setState(() {
+                        _dateController.text = _selectedDate.toString();
+                      });
+                    },
                     decoration: InputDecoration(
                         hintText: 'Date',
+                        labelText: 'Date',
+                        labelStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         focusedBorder: OutlineInputBorder(
@@ -108,6 +127,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: InputDecorator(
                         decoration: InputDecoration(
+                            hintText: 'Priority',
+                            labelText: 'Priority',
+                            labelStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                                 borderSide:
