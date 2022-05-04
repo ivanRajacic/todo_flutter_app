@@ -12,16 +12,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  HashMap allTodoCard = HashMap<TodoCardWidget, bool>();
-  List<TodoCardWidget> workingTodoCard = [];
+  HashMap allTodo = HashMap<TodoCardWidget, bool>();
+  List<TodoCardWidget> workingTodo = [];
   String filterStatus = 'All';
 
-  int cardCounter = 0;
-  int completedCardCounter = 0;
+  int todoCounter = 0;
+  int todoCompletedCounter = 0;
 
-  bool getCardStatus(Key key) {
+  bool getTodoStatus(Key key) {
     bool returnValue = false;
-    allTodoCard.forEach((k, v) {
+    allTodo.forEach((k, v) {
       if (k.key == key) {
         returnValue = v;
       }
@@ -30,43 +30,56 @@ class _HomePageState extends State<HomePage> {
     return returnValue;
   }
 
-  void updateCardStatus(Key key, bool isChecked) {
+  int todoCount() {
+    return allTodo.length;
+  }
+
+  int todoCompletedCount() {
+    int counter = 0;
+    allTodo.forEach((k, v) {
+      if (v == true) {
+        counter++;
+      }
+    });
+    return counter;
+  }
+
+  void updateTodoStatus(Key key, bool isChecked) {
     setState(() {
       if (isChecked) {
-        completedCardCounter++;
-        allTodoCard.forEach((k, v) {
+        allTodo.forEach((k, v) {
           if (k.key == key) {
-            allTodoCard.update(k, (value) => true);
+            allTodo.update(k, (value) => true);
           }
         });
       } else {
-        completedCardCounter--;
-        allTodoCard.forEach((k, v) {
+        allTodo.forEach((k, v) {
           if (k.key == key) {
-            allTodoCard.update(k, (value) => false);
+            allTodo.update(k, (value) => false);
           }
         });
       }
       if (filterStatus == 'All') {
-        workingTodoCard = allTodoCard.keys.toList() as List<TodoCardWidget>;
+        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
       } else if (filterStatus == 'Active') {
-        filterCards(true, false);
+        filterTodo(true, false);
       } else {
-        filterCards(true, true);
+        filterTodo(true, true);
       }
+      todoCompletedCounter = todoCompletedCount();
     });
   }
 
-  void filterCards(bool shouldFilterCards, bool showCompleted) {
-    workingTodoCard.clear();
-    if (shouldFilterCards == true) {
+  void filterTodo(bool shouldfilterTodo, bool showCompleted) {
+    workingTodo.clear();
+    if (shouldfilterTodo == true) {
       if (showCompleted) {
         filterStatus = 'Completed';
       } else {
         filterStatus = 'Active';
       }
       setState(() {
-        workingTodoCard = (Map.from(allTodoCard)
+        workingTodo = (Map.from(allTodo)
               ..removeWhere((k, v) => v != showCompleted))
             .keys
             .toList()
@@ -75,46 +88,44 @@ class _HomePageState extends State<HomePage> {
     } else {
       setState(() {
         filterStatus = 'All';
-        workingTodoCard = allTodoCard.keys.toList() as List<TodoCardWidget>;
+        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
       });
     }
   }
 
-  void deleteCard(Key key, bool isChecked) {
+  void deleteTodo(Key key, bool isChecked) {
     List<TodoCardWidget> tempTodoCardList =
-        allTodoCard.keys.toList() as List<TodoCardWidget>;
+        allTodo.keys.toList() as List<TodoCardWidget>;
     for (var i = 0; i < tempTodoCardList.length; i++) {
       if (tempTodoCardList[i].key == key) {
         setState(() {
-          if (isChecked) {
-            completedCardCounter--;
-          }
-          allTodoCard.remove(tempTodoCardList[i]);
-          cardCounter = allTodoCard.length;
-          workingTodoCard = allTodoCard.keys.toList() as List<TodoCardWidget>;
+          allTodo.remove(tempTodoCardList[i]);
+          todoCounter = todoCount();
+          todoCompletedCounter = todoCompletedCount();
+          workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
         });
       }
     }
   }
 
-  void addCard() async {
+  void addTodo() async {
     final result = await Navigator.pushNamed(context, '/add');
     if (result != null) {
       final Todo data = result as Todo;
       setState(() {
-        allTodoCard.putIfAbsent(
+        allTodo.putIfAbsent(
             TodoCardWidget(
               title: data.title,
               date: data.date,
               priority: data.priority,
-              callback: updateCardStatus,
-              deleteCallback: deleteCard,
-              checkStatusCallback: getCardStatus,
+              callback: updateTodoStatus,
+              deleteCallback: deleteTodo,
+              checkStatusCallback: getTodoStatus,
               key: UniqueKey(),
             ),
             () => false);
-        cardCounter = allTodoCard.length;
-        workingTodoCard = allTodoCard.keys.toList() as List<TodoCardWidget>;
+        todoCounter = todoCount();
+        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
       });
     }
   }
@@ -124,7 +135,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       //glavni container
       floatingActionButton: FloatingActionButton(
-        onPressed: addCard,
+        onPressed: addTodo,
         tooltip: 'Add Card',
         child: const Icon(Icons.add),
         backgroundColor: Colors.red,
@@ -154,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '$completedCardCounter' ' of ' '$cardCounter',
+                          '$todoCompletedCounter' ' of ' '$todoCounter',
                           style: const TextStyle(
                             color: Colors.grey,
                           ),
@@ -162,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () => filterCards(false, false),
+                              onPressed: () => filterTodo(false, false),
                               child: Text(
                                 'All',
                                 style: TextStyle(
@@ -173,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterCards(true, false),
+                              onPressed: () => filterTodo(true, false),
                               child: Text(
                                 'Active',
                                 style: TextStyle(
@@ -184,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterCards(true, true),
+                              onPressed: () => filterTodo(true, true),
                               child: Text(
                                 'Completed',
                                 style: TextStyle(
@@ -203,12 +214,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Flexible(
-                child: workingTodoCard.isNotEmpty
+                child: workingTodo.isNotEmpty
                     ? ListView.builder(
                         scrollDirection: Axis.vertical,
-                        itemCount: workingTodoCard.length,
+                        itemCount: workingTodo.length,
                         itemBuilder: (context, index) {
-                          return workingTodoCard[index];
+                          return workingTodo[index];
                         },
                       )
                     : const Text('No todo\'s')),
