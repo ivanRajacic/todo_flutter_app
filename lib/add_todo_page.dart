@@ -72,27 +72,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter the title of the todo task',
-                      labelText: 'Title',
-                      labelStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                        ),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                  ),
-                ),
+                _Title(nameController: _nameController),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: TextField(
@@ -198,6 +178,40 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title({
+    Key? key,
+    required TextEditingController nameController,
+  })  : _nameController = nameController,
+        super(key: key);
+
+  final TextEditingController _nameController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: _nameController,
+        decoration: InputDecoration(
+          hintText: 'Enter the title of the todo task',
+          labelText: 'Title',
+          labelStyle: const TextStyle(
+            color: Colors.grey,
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.red,
+            ),
+            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),
