@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'todo.dart';
 import 'todo_widget.dart';
 
+enum Status { all, active, completed }
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -11,73 +13,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Todo> todos = [];
-  String filterStatus = 'All';
+  var filterStatus = Status.all;
   bool showCompleted = false;
-
-  int todoCounter = 0;
-  int todoCompletedCounter = 0;
-
-  int todoCount() {
-    return todos.length;
-  }
-
-  int todoCompletedCount() {
-    return todos.where((element) => element.isChecked == true).length;
-  }
-
-  void updateTodoStatus(Key key) {
-    setState(() {
-      int index = todos.indexWhere((element) => element.key == key);
-      todos[index] = Todo(todos[index].title, todos[index].date,
-          todos[index].priority, !todos[index].isChecked, todos[index].key);
-      todoCompletedCounter = todoCompletedCount();
-    });
-  }
-
-  void filterTodo(String filterStatus) {
-    setState(() {
-      if (filterStatus == 'All') {
-        this.filterStatus = 'All';
-      } else if (filterStatus == 'Active') {
-        this.filterStatus = 'Active';
-        showCompleted = false;
-      } else if (filterStatus == 'Completed') {
-        this.filterStatus = 'Completed';
-        showCompleted = true;
-      }
-    });
-  }
-
-  void deleteTodo(Key key) {
-    setState(() {
-      int index = todos.indexWhere((element) => element.key == key);
-      todos.removeAt(index);
-      todoCounter = todoCount();
-      todoCompletedCounter = todoCompletedCount();
-    });
-  }
-
-  void addTodo() async {
-    final result = await Navigator.pushNamed(context, '/add');
-    if (result != null) {
-      final Todo data = result as Todo;
-      setState(() {
-        todos.add(data);
-        todoCounter = todoCount();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //glavni container
-      floatingActionButton: FloatingActionButton(
-        onPressed: addTodo,
-        tooltip: 'Add Card',
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.red,
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(40.0),
@@ -103,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '$todoCompletedCounter' ' of ' '$todoCounter',
+                          '$todoCompletedCount' ' of ' '$todoCount',
                           style: const TextStyle(
                             color: Colors.grey,
                           ),
@@ -111,33 +52,33 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () => filterTodo('All'),
+                              onPressed: () => filterTodo(Status.all),
                               child: Text(
                                 'All',
                                 style: TextStyle(
-                                  color: filterStatus == 'All'
+                                  color: filterStatus == Status.all
                                       ? Colors.red
                                       : Colors.black,
                                 ),
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterTodo('Active'),
+                              onPressed: () => filterTodo(Status.active),
                               child: Text(
                                 'Active',
                                 style: TextStyle(
-                                  color: filterStatus == 'Active'
+                                  color: filterStatus == Status.active
                                       ? Colors.red
                                       : Colors.black,
                                 ),
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterTodo('Completed'),
+                              onPressed: () => filterTodo(Status.completed),
                               child: Text(
                                 'Completed',
                                 style: TextStyle(
-                                  color: filterStatus == 'Completed'
+                                  color: filterStatus == Status.completed
                                       ? Colors.red
                                       : Colors.black,
                                 ),
@@ -154,15 +95,12 @@ class _HomePageState extends State<HomePage> {
             Flexible(
                 child: todos.isNotEmpty
                     ? ListView.builder(
-                        itemCount: filterStatus == 'All'
+                        itemCount: filterStatus == Status.all
                             ? todos.length
-                            : todos
-                                .where((element) =>
-                                    element.isChecked == showCompleted)
-                                .length,
+                            : todoFilteredCount,
                         itemBuilder: (context, index) {
-                          return (TodoWidget(
-                            todo: filterStatus == 'All'
+                          return TodoWidget(
+                            todo: filterStatus == Status.all
                                 ? todos[index]
                                 : todos
                                     .where((element) =>
@@ -170,13 +108,73 @@ class _HomePageState extends State<HomePage> {
                                     .toList()[index],
                             updateStatusCallback: updateTodoStatus,
                             deleteCallback: deleteTodo,
-                          ));
+                          );
                         },
                       )
                     : const Text('No todo\'s')),
           ]),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: addTodo,
+        tooltip: 'Add Card',
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.red,
+      ),
     );
+  }
+
+  int get todoCount {
+    return todos.length;
+  }
+
+  int get todoCompletedCount {
+    return todos.where((element) => element.isChecked == true).length;
+  }
+
+  int get todoFilteredCount {
+    return todos.where((element) => element.isChecked == showCompleted).length;
+  }
+
+  void updateTodoStatus(Key key) {
+    setState(() {
+      int index = todos.indexWhere((element) => element.key == key);
+      todos[index] = Todo(todos[index].title, todos[index].date,
+          todos[index].priority, !todos[index].isChecked, todos[index].key);
+    });
+  }
+
+  void filterTodo(var filterStatus) {
+    setState(() {
+      switch (filterStatus) {
+        case Status.all:
+          this.filterStatus = Status.all;
+          break;
+        case Status.active:
+          this.filterStatus = Status.active;
+          showCompleted = false;
+          break;
+        case Status.completed:
+          this.filterStatus = Status.completed;
+          showCompleted = true;
+      }
+    });
+  }
+
+  void deleteTodo(Key key) {
+    setState(() {
+      int index = todos.indexWhere((element) => element.key == key);
+      todos.removeAt(index);
+    });
+  }
+
+  void addTodo() async {
+    final result = await Navigator.pushNamed(context, '/add');
+    if (result != null) {
+      final data = result as Todo;
+      setState(() {
+        todos.add(data);
+      });
+    }
   }
 }

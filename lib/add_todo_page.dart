@@ -12,25 +12,10 @@ class AddTodoPage extends StatefulWidget {
 class _AddTodoPageState extends State<AddTodoPage> {
   String? _selectedPriority;
   DateTime? _selectedDate;
-  final List<String> _priorities = ['High', 'Medium', 'Low'];
+  final _priorities = ['High', 'Medium', 'Low'];
 
   final _nameController = TextEditingController();
   final _dateController = TextEditingController();
-
-  void passCardData() {
-    if (_selectedPriority != null) {
-      Todo data = Todo(_nameController.text, _dateController.text,
-          _selectedPriority!, false, UniqueKey());
-      Navigator.pop(context, data);
-    }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _dateController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +170,21 @@ class _AddTodoPageState extends State<AddTodoPage> {
     setState(() {
       _selectedPriority = newValue ?? '';
     });
+  }
+
+  void passCardData() {
+    if (_selectedPriority != null) {
+      Todo data = Todo(_nameController.text, _dateController.text,
+          _selectedPriority!, false, UniqueKey());
+      Navigator.pop(context, data);
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dateController.dispose();
+    super.dispose();
   }
 }
 
