@@ -1,8 +1,6 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'todo.dart';
-import 'todo_card_widget.dart';
+import 'todo_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -163,7 +161,7 @@ class _HomePageState extends State<HomePage> {
                                     element.isChecked == showCompleted)
                                 .length,
                         itemBuilder: (context, index) {
-                          return (TodoCardWidget(
+                          return (TodoWidget(
                             todo: filterStatus == 'All'
                                 ? todos[index]
                                 : todos

@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'todo.dart';
 
-class TodoCardWidget extends StatefulWidget {
+class TodoWidget extends StatefulWidget {
   final Todo? todo;
   final Function? updateStatusCallback;
   final Function? deleteCallback;
-  const TodoCardWidget(
+  const TodoWidget(
       {Key? key, this.todo, this.updateStatusCallback, this.deleteCallback})
       : super(key: key);
 
   @override
-  State<TodoCardWidget> createState() => _TodoCardWidgetState();
+  State<TodoWidget> createState() => _TodoWidgetState();
 }
 
-class _TodoCardWidgetState extends State<TodoCardWidget> {
-  _promptDeleteCardDialog(BuildContext context) async {
+class _TodoWidgetState extends State<TodoWidget> {
+  _promptDeleteTodoDialog(BuildContext context) async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -116,7 +116,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
         onChanged: (bool? value) => updateIsChecked(),
       ),
       IconButton(
-        onPressed: () => _promptDeleteCardDialog(context),
+        onPressed: () => _promptDeleteTodoDialog(context),
         icon: const Icon(
           Icons.delete,
           color: Colors.red,
