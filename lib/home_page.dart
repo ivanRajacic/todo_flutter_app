@@ -216,7 +216,6 @@ class _HomePageState extends State<HomePage> {
             Flexible(
                 child: workingTodo.isNotEmpty
                     ? ListView.builder(
-                        scrollDirection: Axis.vertical,
                         itemCount: workingTodo.length,
                         itemBuilder: (context, index) {
                           return workingTodo[index];
