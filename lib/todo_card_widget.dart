@@ -24,18 +24,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 const Text('Are you sure you want to delete this todo card?'),
             actions: [
               TextButton(
-                onPressed: () {
-                  setState(() {
-                    if (widget.deleteCallback != null) {
-                      widget.deleteCallback!(widget.todo!.key);
-                    }
-                  });
-                  Navigator.pop(context);
-                  const snackBar = SnackBar(
-                    content: Text('Todo card deleted successfully!'),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                },
+                onPressed: () => deleteTodo(context),
                 child: const Text(
                   'Yes',
                   style: TextStyle(
@@ -57,6 +46,15 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
             ],
           );
         });
+  }
+
+  void deleteTodo(BuildContext context) {
+    widget.deleteCallback!(widget.todo!.key);
+    Navigator.pop(context);
+    const snackBar = SnackBar(
+      content: Text('Todo card deleted successfully!'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
@@ -115,13 +113,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
       const Spacer(),
       Checkbox(
         value: widget.todo!.isChecked,
-        onChanged: (bool? value) {
-          setState(() {
-            if (widget.updateStatusCallback != null) {
-              widget.updateStatusCallback!(widget.todo!.key);
-            }
-          });
-        },
+        onChanged: (bool? value) => updateIsChecked(),
       ),
       IconButton(
         onPressed: () => _promptDeleteCardDialog(context),
@@ -131,5 +123,13 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
         ),
       )
     ]);
+  }
+
+  void updateIsChecked() {
+    setState(() {
+      if (widget.updateStatusCallback != null) {
+        widget.updateStatusCallback!(widget.todo!.key);
+      }
+    });
   }
 }

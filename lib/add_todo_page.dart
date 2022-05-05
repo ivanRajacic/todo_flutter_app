@@ -137,11 +137,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
                             elevation: 8,
                             isDense: true,
                             hint: const Text('Priority'),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedPriority = newValue ?? '';
-                              });
-                            },
+                            onChanged: (String? newValue) =>
+                                updatePriority(newValue),
                             items: _priorities
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
@@ -182,6 +179,12 @@ class _AddTodoPageState extends State<AddTodoPage> {
         ),
       ),
     );
+  }
+
+  void updatePriority(String? newValue) {
+    setState(() {
+      _selectedPriority = newValue ?? '';
+    });
   }
 }
 
