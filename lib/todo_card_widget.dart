@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'todo.dart';
+
 class TodoCardWidget extends StatefulWidget {
-  final String title;
-  final String date;
-  final String priority;
-  final Function? callback;
+  final Todo? todo;
+  final Function? updateStatusCallback;
   final Function? deleteCallback;
-  final Function? checkStatusCallback;
   const TodoCardWidget(
-      {Key? key,
-      this.title = 'title',
-      this.date = 'date',
-      this.priority = 'priority',
-      this.callback,
-      this.deleteCallback,
-      this.checkStatusCallback})
+      {Key? key, this.todo, this.updateStatusCallback, this.deleteCallback})
       : super(key: key);
 
   @override
@@ -34,8 +27,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 onPressed: () {
                   setState(() {
                     if (widget.deleteCallback != null) {
-                      widget.deleteCallback!(
-                          widget.key, widget.checkStatusCallback!(widget.key));
+                      widget.deleteCallback!(widget.todo!.key);
                     }
                   });
                   Navigator.pop(context);
@@ -77,7 +69,7 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Text(
-              widget.title,
+              widget.todo!.title,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
@@ -89,9 +81,9 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
             child: Row(
               children: [
                 Text(
-                  widget.date,
+                  widget.todo!.date,
                   style: TextStyle(
-                    decoration: widget.checkStatusCallback!(widget.key)
+                    decoration: widget.todo!.isChecked
                         ? TextDecoration.lineThrough
                         : null,
                     color: Colors.grey,
@@ -100,16 +92,16 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
                 Text(
                   ' * ',
                   style: TextStyle(
-                    decoration: widget.checkStatusCallback!(widget.key)
+                    decoration: widget.todo!.isChecked
                         ? TextDecoration.lineThrough
                         : null,
                     color: Colors.grey,
                   ),
                 ),
                 Text(
-                  widget.priority,
+                  widget.todo!.priority,
                   style: TextStyle(
-                    decoration: widget.checkStatusCallback!(widget.key)
+                    decoration: widget.todo!.isChecked
                         ? TextDecoration.lineThrough
                         : null,
                     color: Colors.grey,
@@ -122,11 +114,11 @@ class _TodoCardWidgetState extends State<TodoCardWidget> {
       ),
       const Spacer(),
       Checkbox(
-        value: widget.checkStatusCallback!(widget.key),
+        value: widget.todo!.isChecked,
         onChanged: (bool? value) {
           setState(() {
-            if (widget.callback != null) {
-              widget.callback!(widget.key, value);
+            if (widget.updateStatusCallback != null) {
+              widget.updateStatusCallback!(widget.todo!.key);
             }
           });
         },

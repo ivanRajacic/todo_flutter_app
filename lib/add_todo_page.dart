@@ -19,8 +19,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
   void passCardData() {
     if (_selectedPriority != null) {
-      Todo data =
-          Todo(_nameController.text, _dateController.text, _selectedPriority!);
+      Todo data = Todo(_nameController.text, _dateController.text,
+          _selectedPriority!, false, UniqueKey());
       Navigator.pop(context, data);
     }
   }

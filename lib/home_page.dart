@@ -12,100 +12,51 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  HashMap allTodo = HashMap<TodoCardWidget, bool>();
-  List<TodoCardWidget> workingTodo = [];
+  List<Todo> todos = [];
   String filterStatus = 'All';
+  bool showCompleted = false;
 
   int todoCounter = 0;
   int todoCompletedCounter = 0;
 
-  bool getTodoStatus(Key key) {
-    bool returnValue = false;
-    allTodo.forEach((k, v) {
-      if (k.key == key) {
-        returnValue = v;
-      }
-    });
-
-    return returnValue;
-  }
-
   int todoCount() {
-    return allTodo.length;
+    return todos.length;
   }
 
   int todoCompletedCount() {
-    int counter = 0;
-    allTodo.forEach((k, v) {
-      if (v == true) {
-        counter++;
-      }
-    });
-    return counter;
+    return todos.where((element) => element.isChecked == true).length;
   }
 
-  void updateTodoStatus(Key key, bool isChecked) {
+  void updateTodoStatus(Key key) {
     setState(() {
-      if (isChecked) {
-        allTodo.forEach((k, v) {
-          if (k.key == key) {
-            allTodo.update(k, (value) => true);
-          }
-        });
-      } else {
-        allTodo.forEach((k, v) {
-          if (k.key == key) {
-            allTodo.update(k, (value) => false);
-          }
-        });
-      }
-      if (filterStatus == 'All') {
-        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
-      } else if (filterStatus == 'Active') {
-        filterTodo(true, false);
-      } else {
-        filterTodo(true, true);
-      }
+      int index = todos.indexWhere((element) => element.key == key);
+      todos[index] = Todo(todos[index].title, todos[index].date,
+          todos[index].priority, !todos[index].isChecked, todos[index].key);
       todoCompletedCounter = todoCompletedCount();
     });
   }
 
-  void filterTodo(bool shouldfilterTodo, bool showCompleted) {
-    workingTodo.clear();
-    if (shouldfilterTodo == true) {
-      if (showCompleted) {
-        filterStatus = 'Completed';
-      } else {
-        filterStatus = 'Active';
+  void filterTodo(String filterStatus) {
+    setState(() {
+      if (filterStatus == 'All') {
+        this.filterStatus = 'All';
+      } else if (filterStatus == 'Active') {
+        this.filterStatus = 'Active';
+        showCompleted = false;
+      } else if (filterStatus == 'Completed') {
+        this.filterStatus = 'Completed';
+        showCompleted = true;
       }
-      setState(() {
-        workingTodo = (Map.from(allTodo)
-              ..removeWhere((k, v) => v != showCompleted))
-            .keys
-            .toList()
-            .cast<TodoCardWidget>();
-      });
-    } else {
-      setState(() {
-        filterStatus = 'All';
-        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
-      });
-    }
+    });
   }
 
-  void deleteTodo(Key key, bool isChecked) {
-    List<TodoCardWidget> tempTodoCardList =
-        allTodo.keys.toList() as List<TodoCardWidget>;
-    for (var i = 0; i < tempTodoCardList.length; i++) {
-      if (tempTodoCardList[i].key == key) {
-        setState(() {
-          allTodo.remove(tempTodoCardList[i]);
-          todoCounter = todoCount();
-          todoCompletedCounter = todoCompletedCount();
-          workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
-        });
-      }
-    }
+  void deleteTodo(Key key) {
+    setState(() {
+      int index = todos.indexWhere((element) => element.key == key);
+      todos.removeAt(index);
+      todoCounter = todoCount();
+      todoCompletedCounter = todoCompletedCount();
+    });
   }
 
   void addTodo() async {
@@ -113,19 +64,8 @@ class _HomePageState extends State<HomePage> {
     if (result != null) {
       final Todo data = result as Todo;
       setState(() {
-        allTodo.putIfAbsent(
-            TodoCardWidget(
-              title: data.title,
-              date: data.date,
-              priority: data.priority,
-              callback: updateTodoStatus,
-              deleteCallback: deleteTodo,
-              checkStatusCallback: getTodoStatus,
-              key: UniqueKey(),
-            ),
-            () => false);
+        todos.add(data);
         todoCounter = todoCount();
-        workingTodo = allTodo.keys.toList() as List<TodoCardWidget>;
       });
     }
   }
@@ -173,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           children: [
                             TextButton(
-                              onPressed: () => filterTodo(false, false),
+                              onPressed: () => filterTodo('All'),
                               child: Text(
                                 'All',
                                 style: TextStyle(
@@ -184,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterTodo(true, false),
+                              onPressed: () => filterTodo('Active'),
                               child: Text(
                                 'Active',
                                 style: TextStyle(
@@ -195,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () => filterTodo(true, true),
+                              onPressed: () => filterTodo('Completed'),
                               child: Text(
                                 'Completed',
                                 style: TextStyle(
@@ -214,11 +154,25 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Flexible(
-                child: workingTodo.isNotEmpty
+                child: todos.isNotEmpty
                     ? ListView.builder(
-                        itemCount: workingTodo.length,
+                        itemCount: filterStatus == 'All'
+                            ? todos.length
+                            : todos
+                                .where((element) =>
+                                    element.isChecked == showCompleted)
+                                .length,
                         itemBuilder: (context, index) {
-                          return workingTodo[index];
+                          return (TodoCardWidget(
+                            todo: filterStatus == 'All'
+                                ? todos[index]
+                                : todos
+                                    .where((element) =>
+                                        element.isChecked == showCompleted)
+                                    .toList()[index],
+                            updateStatusCallback: updateTodoStatus,
+                            deleteCallback: deleteTodo,
+                          ));
                         },
                       )
                     : const Text('No todo\'s')),

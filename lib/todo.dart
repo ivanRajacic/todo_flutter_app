@@ -1,7 +1,12 @@
+import 'package:flutter/cupertino.dart';
+
 class Todo {
   final String title;
   final String date;
   final String priority;
+  final Key key;
 
-  Todo(this.title, this.date, this.priority);
+  bool isChecked;
+
+  Todo(this.title, this.date, this.priority, this.isChecked, this.key);
 }
