@@ -65,26 +65,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
                         selectedPriority: _selectedPriority,
                         priorities: _priorities,
                         updatePriority: updatePriority),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 60.0,
-                        child: ElevatedButton(
-                          onPressed: passCardData,
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0))),
-                          child: const Text(
-                            'Add',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                    _AddButton(
+                      passCardData: passCardData,
                     ),
                   ],
                 ),
@@ -118,62 +100,33 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 }
 
-class _PriorityPicker extends StatefulWidget {
-  const _PriorityPicker({
+class _Title extends StatelessWidget {
+  const _Title({
     Key? key,
-    required String? selectedPriority,
-    required List<String> priorities,
-    required Function updatePriority,
-  })  : _selectedPriority = selectedPriority,
-        _priorities = priorities,
-        _updatePriority = updatePriority,
+    required TextEditingController nameController,
+  })  : _nameController = nameController,
         super(key: key);
 
-  final String? _selectedPriority;
-  final List<String> _priorities;
-  final Function _updatePriority;
+  final TextEditingController _nameController;
 
-  @override
-  State<_PriorityPicker> createState() => _PriorityPickerState();
-}
-
-class _PriorityPickerState extends State<_PriorityPicker> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: InputDecorator(
+      child: TextField(
+        controller: _nameController,
         decoration: InputDecoration(
-          hintText: 'Priority',
-          labelText: 'Priority',
+          hintText: 'Enter the title of the todo task',
+          labelText: 'Title',
           labelStyle: const TextStyle(
             color: Colors.grey,
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+          focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: widget._selectedPriority,
-            icon: const Icon(
-              Icons.arrow_drop_down_circle,
               color: Colors.red,
             ),
-            elevation: 8,
-            isDense: true,
-            hint: const Text('Priority'),
-            onChanged: (String? newValue) => widget._updatePriority(newValue),
-            items: widget._priorities
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),
@@ -246,33 +199,97 @@ class _DatePickerState extends State<_DatePicker> {
   }
 }
 
-class _Title extends StatelessWidget {
-  const _Title({
+class _PriorityPicker extends StatefulWidget {
+  const _PriorityPicker({
     Key? key,
-    required TextEditingController nameController,
-  })  : _nameController = nameController,
+    required String? selectedPriority,
+    required List<String> priorities,
+    required Function updatePriority,
+  })  : _selectedPriority = selectedPriority,
+        _priorities = priorities,
+        _updatePriority = updatePriority,
         super(key: key);
 
-  final TextEditingController _nameController;
+  final String? _selectedPriority;
+  final List<String> _priorities;
+  final Function _updatePriority;
+
+  @override
+  State<_PriorityPicker> createState() => _PriorityPickerState();
+}
+
+class _PriorityPickerState extends State<_PriorityPicker> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          hintText: 'Priority',
+          labelText: 'Priority',
+          labelStyle: const TextStyle(
+            color: Colors.grey,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: widget._selectedPriority,
+            icon: const Icon(
+              Icons.arrow_drop_down_circle,
+              color: Colors.red,
+            ),
+            elevation: 8,
+            isDense: true,
+            hint: const Text('Priority'),
+            onChanged: (String? newValue) => widget._updatePriority(newValue),
+            items: widget._priorities
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddButton extends StatelessWidget {
+  const _AddButton({
+    Key? key,
+    required Function passCardData,
+  })  : _passCardData = passCardData,
+        super(key: key);
+
+  final Function _passCardData;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: _nameController,
-        decoration: InputDecoration(
-          hintText: 'Enter the title of the todo task',
-          labelText: 'Title',
-          labelStyle: const TextStyle(
-            color: Colors.grey,
-          ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.red,
+      child: SizedBox(
+        width: double.infinity,
+        height: 60.0,
+        child: ElevatedButton(
+          onPressed: () => _passCardData(),
+          style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0))),
+          child: const Text(
+            'Add',
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
             ),
-            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),
