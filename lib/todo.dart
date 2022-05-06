@@ -9,4 +9,14 @@ class Todo {
   bool isChecked;
 
   Todo(this.title, this.date, this.priority, this.isChecked, this.key);
+
+  Map toJson() {
+    return {
+      'title': title,
+      'date': date,
+      'priority': priority,
+      'key': key.toString(),
+      'isChecked': isChecked.toString()
+    };
+  }
 }

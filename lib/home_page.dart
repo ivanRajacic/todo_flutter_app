@@ -175,6 +175,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         todos.add(data);
       });
+      print(data.toJson());
     }
   }
 }
