@@ -56,12 +56,12 @@ class _AddTodoPageState extends State<AddTodoPage> {
                     ),
                   ],
                 ),
-                _Title(nameController: _nameController),
-                _DatePicker(dateController: _dateController),
+                _TitleField(nameController: _nameController),
+                _DateField(dateController: _dateController),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _PriorityPicker(
+                    _PriorityField(
                         selectedPriority: _selectedPriority,
                         priorities: _priorities,
                         updatePriority: updatePriority),
@@ -100,8 +100,8 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 }
 
-class _Title extends StatelessWidget {
-  const _Title({
+class _TitleField extends StatelessWidget {
+  const _TitleField({
     Key? key,
     required TextEditingController nameController,
   })  : _nameController = nameController,
@@ -134,8 +134,8 @@ class _Title extends StatelessWidget {
   }
 }
 
-class _DatePicker extends StatefulWidget {
-  const _DatePicker({
+class _DateField extends StatefulWidget {
+  const _DateField({
     Key? key,
     required TextEditingController dateController,
   })  : _dateController = dateController,
@@ -144,10 +144,10 @@ class _DatePicker extends StatefulWidget {
   final TextEditingController _dateController;
 
   @override
-  State<_DatePicker> createState() => _DatePickerState();
+  State<_DateField> createState() => _DateFieldState();
 }
 
-class _DatePickerState extends State<_DatePicker> {
+class _DateFieldState extends State<_DateField> {
   DateTime? _selectedDate;
 
   @override
@@ -199,8 +199,8 @@ class _DatePickerState extends State<_DatePicker> {
   }
 }
 
-class _PriorityPicker extends StatefulWidget {
-  const _PriorityPicker({
+class _PriorityField extends StatefulWidget {
+  const _PriorityField({
     Key? key,
     required String? selectedPriority,
     required List<String> priorities,
@@ -215,10 +215,10 @@ class _PriorityPicker extends StatefulWidget {
   final Function _updatePriority;
 
   @override
-  State<_PriorityPicker> createState() => _PriorityPickerState();
+  State<_PriorityField> createState() => _PriorityFieldState();
 }
 
-class _PriorityPickerState extends State<_PriorityPicker> {
+class _PriorityFieldState extends State<_PriorityField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
