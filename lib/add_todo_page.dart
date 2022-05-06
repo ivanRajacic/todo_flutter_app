@@ -236,11 +236,11 @@ class _DatePickerState extends State<_DatePicker> {
             '.' +
             _selectedDate!.month.toString() +
             '.' +
-            _selectedDate!.year.toString() +
-            ' ' +
-            _selectedDate!.hour.toString() +
-            ':' +
-            _selectedDate!.minute.toString();
+            _selectedDate!.year.toString();
+        // ' ' +
+        //     _selectedDate!.hour.toString() +
+        //     ':' +
+        //     _selectedDate!.minute.toString();
       });
     }
   }
