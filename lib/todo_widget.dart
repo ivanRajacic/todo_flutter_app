@@ -21,61 +21,71 @@ class _TodoWidgetState extends State<TodoWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(
-              widget.todo.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+      Padding(
+        padding: const EdgeInsets.only(right: 4.0),
+        child: Checkbox(
+          value: widget.todo.isChecked,
+          onChanged: (bool? value) => updateIsChecked(),
+        ),
+      ),
+      Expanded(
+        flex: 100,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                widget.todo.title,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              children: [
-                Text(
-                  widget.todo.date,
-                  style: TextStyle(
-                    decoration: widget.todo.isChecked
-                        ? TextDecoration.lineThrough
-                        : null,
-                    color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    widget.todo.date,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      decoration: widget.todo.isChecked
+                          ? TextDecoration.lineThrough
+                          : null,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-                Text(
-                  ' * ',
-                  style: TextStyle(
-                    decoration: widget.todo.isChecked
-                        ? TextDecoration.lineThrough
-                        : null,
-                    color: Colors.grey,
+                  Text(
+                    ' * ',
+                    style: TextStyle(
+                      decoration: widget.todo.isChecked
+                          ? TextDecoration.lineThrough
+                          : null,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-                Text(
-                  widget.todo.priority,
-                  style: TextStyle(
-                    decoration: widget.todo.isChecked
-                        ? TextDecoration.lineThrough
-                        : null,
-                    color: Colors.grey,
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
+                  Text(
+                    widget.todo.priority,
+                    style: TextStyle(
+                      decoration: widget.todo.isChecked
+                          ? TextDecoration.lineThrough
+                          : null,
+                      color: Colors.grey,
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
       const Spacer(),
-      Checkbox(
-        value: widget.todo.isChecked,
-        onChanged: (bool? value) => updateIsChecked(),
-      ),
       IconButton(
         onPressed: () => _promptDeleteTodoDialog(context),
         icon: const Icon(
