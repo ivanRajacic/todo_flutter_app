@@ -1,14 +1,24 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'todo.dart';
+
 class UserSimplePreferences {
-  static final SharedPreferences _preferences =
-      SharedPreferences.getInstance() as SharedPreferences;
+  static const _keyTodo = 'todo';
 
-  static const _keyTodo = 'tdod';
-
-  static Future setTodo(String todo) async {
-    await _preferences.setString(_keyTodo, todo);
+  static Future setTodo(Todo todo) async {
+    SharedPreferences _preferences = await SharedPreferences.getInstance();
+    await _preferences.setString(_keyTodo, jsonEncode(todo.toJson()));
   }
 
-  static String? getTodo() => _preferences.getString(_keyTodo);
+  static Future getTodo() async {
+    SharedPreferences _preferences = await SharedPreferences.getInstance();
+
+    if (_preferences.getString(_keyTodo) != null) {
+      return Todo.fromJson(jsonDecode(_preferences.getString(_keyTodo)!));
+    } else {
+      return null;
+    }
+  }
 }

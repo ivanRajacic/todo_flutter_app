@@ -10,13 +10,18 @@ class Todo {
 
   Todo(this.title, this.date, this.priority, this.isChecked, this.key);
 
-  Map toJson() {
-    return {
-      'title': title,
-      'date': date,
-      'priority': priority,
-      'key': key.toString(),
-      'isChecked': isChecked.toString()
-    };
-  }
+  Todo.fromJson(Map<String, dynamic> json)
+      : title = json['title'],
+        date = json['date'],
+        priority = json['priority'],
+        key = json['key'] as Key,
+        isChecked = json['isChecked'] as bool;
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'date': date,
+        'priority': priority,
+        'key': key.toString(),
+        'isChecked': isChecked.toString()
+      };
 }

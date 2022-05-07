@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_flutter_app/user_simple_preferences.dart';
 import 'todo.dart';
 import 'todo_widget.dart';
 
@@ -175,7 +176,6 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         todos.add(data);
       });
-      print(data.toJson());
     }
   }
 }
