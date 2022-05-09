@@ -6,19 +6,31 @@ import 'todo.dart';
 
 class UserSimplePreferences {
   static const _keyTodo = 'todo';
+  final Future<SharedPreferences> _preferences =
+      SharedPreferences.getInstance();
 
-  static Future setTodo(Todo todo) async {
-    SharedPreferences _preferences = await SharedPreferences.getInstance();
-    await _preferences.setString(_keyTodo, jsonEncode(todo.toJson()));
+  Future setTodos(List<Todo> todos) async {
+    final SharedPreferences preferences = await _preferences;
+
+    List<String> stringTodos = [];
+    for (var todo in todos) {
+      stringTodos.add(jsonEncode(todo.toJson()));
+    }
+    await preferences.setStringList(_keyTodo, stringTodos);
   }
 
-  static Future getTodo() async {
-    SharedPreferences _preferences = await SharedPreferences.getInstance();
+  Future<List<Todo>> getTodos() async {
+    final SharedPreferences preferences = await _preferences;
+    List<String> stringTodos = [];
+    List<Todo> todos = [];
 
-    if (_preferences.getString(_keyTodo) != null) {
-      return Todo.fromJson(jsonDecode(_preferences.getString(_keyTodo)!));
-    } else {
-      return null;
+    if (preferences.getStringList(_keyTodo) == null) {
+      return todos;
     }
+    stringTodos = preferences.getStringList(_keyTodo)!;
+    for (var strTodo in stringTodos) {
+      todos.add(Todo.fromJson(jsonDecode(strTodo)));
+    }
+    return todos;
   }
 }

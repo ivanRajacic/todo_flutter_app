@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_flutter_app/user_simple_preferences.dart';
 import 'todo.dart';
 import 'todo_widget.dart';
 
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Todo> todos = [];
+
   Filter filterStatus = Filter.all;
   bool showCompleted = false;
 
@@ -109,11 +111,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void deleteTodo(int hashCode) {
+  void deleteTodo(int hashCode) async {
     setState(() {
       int index = todos.indexWhere((todo) => todo.hashCode == hashCode);
       todos.removeAt(index);
     });
+
+    await UserSimplePreferences().setTodos(todos);
   }
 
   void addTodo() async {
@@ -125,6 +129,14 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       todos.add(result as Todo);
     });
+
+    await UserSimplePreferences().setTodos(todos);
+  }
+
+  Future<List<Todo>> loadTodo() async {
+    return await UserSimplePreferences()
+        .getTodos()
+        .then((List<Todo> tempTodos) => todos = tempTodos);
   }
 
   void filterTodo(Filter filterStatus) {
@@ -136,6 +148,14 @@ class _HomePageState extends State<HomePage> {
       if (filterStatus == Filter.completed) {
         showCompleted = true;
       }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      loadTodo();
     });
   }
 }

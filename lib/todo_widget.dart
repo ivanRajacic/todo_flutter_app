@@ -20,39 +20,42 @@ class TodoWidget extends StatefulWidget {
 class _TodoWidgetState extends State<TodoWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      _CheckBox(
-        widget: widget,
-        updateIsChecked: updateIsChecked,
-      ),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _Title(widget: widget),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Row(
-                children: [
-                  _Date(widget: widget),
-                  _Separator(widget: widget),
-                  _Priority(widget: widget),
-                ],
-              ),
-            )
-          ],
+    return Row(
+      children: [
+        _CheckBox(
+          widget: widget,
+          updateIsChecked: updateIsChecked,
         ),
-      ),
-      const Spacer(),
-      IconButton(
-        onPressed: () => _promptDeleteTodoDialog(context),
-        icon: const Icon(
-          Icons.delete,
-          color: Colors.red,
+        Expanded(
+          flex: 100,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _Title(widget: widget),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  children: [
+                    _Date(widget: widget),
+                    _Separator(widget: widget),
+                    _Priority(widget: widget),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
-      )
-    ]);
+        const Spacer(),
+        IconButton(
+          onPressed: () => _promptDeleteTodoDialog(context),
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+        ),
+      ],
+    );
   }
 
   void updateIsChecked(bool? b) {

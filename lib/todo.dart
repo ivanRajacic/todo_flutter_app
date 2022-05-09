@@ -5,7 +5,6 @@ class Todo {
   final String title;
   final String date;
   final String priority;
-
   bool isChecked;
 
   Todo({
