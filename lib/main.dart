@@ -12,10 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: const HomePage(),
       routes: {
-        '/home': (context) => HomePage(),
-        '/add': (context) => AddTodoPage(),
+        '/home': (context) => const HomePage(),
+        '/add': (context) => const AddTodoPage(),
       },
     );
   }

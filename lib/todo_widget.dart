@@ -20,65 +20,24 @@ class TodoWidget extends StatefulWidget {
 class _TodoWidgetState extends State<TodoWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Padding(
-        padding: const EdgeInsets.only(right: 4.0),
-        child: Checkbox(
-          value: widget.todo.isChecked,
-          onChanged: (bool? value) => updateIsChecked(),
-        ),
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      _CheckBox(
+        widget: widget,
+        updateIsChecked: updateIsChecked,
       ),
       Expanded(
-        flex: 100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                widget.todo.title,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
+            _Title(widget: widget),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
                 children: [
-                  Text(
-                    widget.todo.date,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      decoration: widget.todo.isChecked
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    ' * ',
-                    style: TextStyle(
-                      decoration: widget.todo.isChecked
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    widget.todo.priority,
-                    style: TextStyle(
-                      decoration: widget.todo.isChecked
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: Colors.grey,
-                    ),
-                  )
+                  _Date(widget: widget),
+                  _Separator(widget: widget),
+                  _Priority(widget: widget),
                 ],
               ),
             )
@@ -96,14 +55,14 @@ class _TodoWidgetState extends State<TodoWidget> {
     ]);
   }
 
-  void updateIsChecked() {
+  void updateIsChecked(bool? b) {
     setState(() {
-      widget.updateStatusCallback(widget.todo.key);
+      widget.updateStatusCallback(widget.todo.hashCode);
     });
   }
 
   void deleteTodo(BuildContext context) {
-    widget.deleteCallback(widget.todo.key);
+    widget.deleteCallback(widget.todo.hashCode);
     Navigator.pop(context);
     const snackBar = SnackBar(
       content: Text('Todo card deleted successfully!'),
@@ -142,5 +101,114 @@ class _TodoWidgetState extends State<TodoWidget> {
             ],
           );
         });
+  }
+}
+
+class _CheckBox extends StatelessWidget {
+  const _CheckBox({
+    Key? key,
+    required this.widget,
+    required this.updateIsChecked,
+  }) : super(key: key);
+
+  final TodoWidget widget;
+  final void Function(bool?) updateIsChecked;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4.0),
+      child: Checkbox(
+        value: widget.todo.isChecked,
+        onChanged: updateIsChecked,
+      ),
+    );
+  }
+}
+
+class _Priority extends StatelessWidget {
+  const _Priority({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final TodoWidget widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.todo.priority,
+      style: TextStyle(
+        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
+
+class _Separator extends StatelessWidget {
+  const _Separator({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final TodoWidget widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      ' * ',
+      style: TextStyle(
+        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
+
+class _Date extends StatelessWidget {
+  const _Date({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final TodoWidget widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.todo.date,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        color: Colors.grey,
+      ),
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title({
+    Key? key,
+    required this.widget,
+  }) : super(key: key);
+
+  final TodoWidget widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        widget.todo.title,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+    );
   }
 }

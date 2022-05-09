@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import 'todo.dart';
 
 class AddTodoPage extends StatefulWidget {
@@ -13,62 +13,47 @@ class _AddTodoPageState extends State<AddTodoPage> {
   String? _selectedPriority;
   final _priorities = ['High', 'Medium', 'Low'];
 
-  final _nameController = TextEditingController();
+  final _titleController = TextEditingController();
   final _dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          width: double.infinity,
+        child: Padding(
           padding: const EdgeInsets.all(40.0),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.red,
-                        ),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.red,
                     ),
-                  ],
+                  ),
                 ),
-                Row(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        'Add Task',
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Add Task',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
-                _TitleField(nameController: _nameController),
+                _TitleField(nameController: _titleController),
                 _DateField(dateController: _dateController),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _PriorityField(
-                        selectedPriority: _selectedPriority,
-                        priorities: _priorities,
-                        updatePriority: updatePriority),
-                    _AddButton(
-                      passCardData: passCardData,
-                    ),
-                  ],
+                _PriorityField(
+                    selectedPriority: _selectedPriority,
+                    priorities: _priorities,
+                    updatePriority: updatePriority),
+                _AddButton(
+                  passCardData: passCardData,
                 ),
               ],
             ),
@@ -86,15 +71,19 @@ class _AddTodoPageState extends State<AddTodoPage> {
 
   void passCardData() {
     if (_selectedPriority != null) {
-      Todo data = Todo(_nameController.text, _dateController.text,
-          _selectedPriority!, false, UniqueKey());
+      Todo data = Todo(
+        title: _titleController.text,
+        date: _dateController.text,
+        priority: _selectedPriority!,
+        isChecked: false,
+      );
       Navigator.pop(context, data);
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _titleController.dispose();
     _dateController.dispose();
     super.dispose();
   }
@@ -157,7 +146,7 @@ class _DateFieldState extends State<_DateField> {
       child: TextField(
         controller: widget._dateController,
         readOnly: true,
-        onTap: () async => _datePicker(context),
+        onTap: () async => _showDatePicker(context),
         decoration: InputDecoration(
           hintText: 'Date',
           labelText: 'Date',
@@ -176,35 +165,33 @@ class _DateFieldState extends State<_DateField> {
     );
   }
 
-  Future<void> _datePicker(BuildContext context) async {
+  Future<void> _showDatePicker(BuildContext context) async {
     {
+      final now = DateTime.now();
+      final formatter = DateFormat('dd-MM-yyyy');
       _selectedDate = await showDatePicker(
-          context: context,
-          initialDate: _selectedDate == null ? DateTime.now() : _selectedDate!,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2030));
+        context: context,
+        initialDate: _selectedDate == null ? now : _selectedDate!,
+        firstDate: now,
+        lastDate: now.add(const Duration(days: 365 * 30)),
+      );
 
       setState(() {
-        widget._dateController.text = _selectedDate!.day.toString() +
-            '.' +
-            _selectedDate!.month.toString() +
-            '.' +
-            _selectedDate!.year.toString();
-        // ' ' +
-        //     _selectedDate!.hour.toString() +
-        //     ':' +
-        //     _selectedDate!.minute.toString();
+        if (_selectedDate == null) {
+          return;
+        }
+        widget._dateController.text = formatter.format(_selectedDate!);
       });
     }
   }
 }
 
-class _PriorityField extends StatefulWidget {
+class _PriorityField extends StatelessWidget {
   const _PriorityField({
     Key? key,
     required String? selectedPriority,
     required List<String> priorities,
-    required Function updatePriority,
+    required void Function(String? newValue) updatePriority,
   })  : _selectedPriority = selectedPriority,
         _priorities = priorities,
         _updatePriority = updatePriority,
@@ -212,13 +199,8 @@ class _PriorityField extends StatefulWidget {
 
   final String? _selectedPriority;
   final List<String> _priorities;
-  final Function _updatePriority;
+  final void Function(String? newValue) _updatePriority;
 
-  @override
-  State<_PriorityField> createState() => _PriorityFieldState();
-}
-
-class _PriorityFieldState extends State<_PriorityField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -239,7 +221,7 @@ class _PriorityFieldState extends State<_PriorityField> {
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
-            value: widget._selectedPriority,
+            value: _selectedPriority,
             icon: const Icon(
               Icons.arrow_drop_down_circle,
               color: Colors.red,
@@ -247,9 +229,8 @@ class _PriorityFieldState extends State<_PriorityField> {
             elevation: 8,
             isDense: true,
             hint: const Text('Priority'),
-            onChanged: (String? newValue) => widget._updatePriority(newValue),
-            items: widget._priorities
-                .map<DropdownMenuItem<String>>((String value) {
+            onChanged: _updatePriority,
+            items: _priorities.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
@@ -265,11 +246,11 @@ class _PriorityFieldState extends State<_PriorityField> {
 class _AddButton extends StatelessWidget {
   const _AddButton({
     Key? key,
-    required Function passCardData,
+    required void Function() passCardData,
   })  : _passCardData = passCardData,
         super(key: key);
 
-  final Function _passCardData;
+  final void Function() _passCardData;
 
   @override
   Widget build(BuildContext context) {
@@ -279,11 +260,12 @@ class _AddButton extends StatelessWidget {
         width: double.infinity,
         height: 60.0,
         child: ElevatedButton(
-          onPressed: () => _passCardData(),
+          onPressed: _passCardData,
           style: ElevatedButton.styleFrom(
-              primary: Colors.red,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0))),
+            primary: Colors.red,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+          ),
           child: const Text(
             'Add',
             style: TextStyle(
