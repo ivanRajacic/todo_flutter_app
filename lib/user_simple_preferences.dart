@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'todo.dart';
 
-class UserSimplePreferences {
+class TodoPreferences {
   static const _keyTodo = 'todo';
   final Future<SharedPreferences> _preferences =
       SharedPreferences.getInstance();

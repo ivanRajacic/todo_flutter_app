@@ -42,15 +42,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Row(
                           children: [
-                            _AllButton(
+                            _FilterAllButton(
                               filterStatus: filterStatus,
                               filterTodo: filterTodo,
                             ),
-                            _ActiveButton(
+                            _FilterActiveButton(
                               filterStatus: filterStatus,
                               filterTodo: filterTodo,
                             ),
-                            _CompletedButton(
+                            _FilterCompletedButton(
                               filterStatus: filterStatus,
                               filterTodo: filterTodo,
                             ),
@@ -62,23 +62,14 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            Flexible(
-                child: todos.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: filterStatus == Filter.all
-                            ? todos.length
-                            : todoFilteredCount,
-                        itemBuilder: (context, index) {
-                          return TodoWidget(
-                            todo: filterStatus == Filter.all
-                                ? todos[index]
-                                : todoFilteredList[index],
-                            updateStatusCallback: updateTodoStatus,
-                            deleteCallback: deleteTodo,
-                          );
-                        },
-                      )
-                    : const Text('No todo\'s')),
+            _TodoList(
+              todos: todos,
+              filterStatus: filterStatus,
+              todoFilteredCount: todoFilteredCount,
+              todoFilteredList: todoFilteredList,
+              updateTodoStatus: updateTodoStatus,
+              deleteTodo: deleteTodo,
+            ),
           ]),
         ),
       ),
@@ -96,13 +87,10 @@ class _HomePageState extends State<HomePage> {
   int get todoCompletedCount =>
       todos.where((todo) => todo.isChecked == true).length;
 
-  int get todoFilteredCount {
-    return todos.where((todo) => todo.isChecked == showCompleted).length;
-  }
+  int get todoFilteredCount => todoFilteredList.length;
 
-  List<Todo> get todoFilteredList {
-    return todos.where((todo) => todo.isChecked == showCompleted).toList();
-  }
+  List<Todo> get todoFilteredList =>
+      todos.where((todo) => todo.isChecked == showCompleted).toList();
 
   void updateTodoStatus(int hashCode) {
     setState(() {
@@ -117,24 +105,21 @@ class _HomePageState extends State<HomePage> {
       todos.removeAt(index);
     });
 
-    await UserSimplePreferences().setTodos(todos);
+    await TodoPreferences().setTodos(todos);
   }
 
   void addTodo() async {
     final result = await Navigator.pushNamed(context, '/add');
-    if (result == null) {
-      return;
-    }
-
+    if (result == null) return;
     setState(() {
       todos.add(result as Todo);
     });
 
-    await UserSimplePreferences().setTodos(todos);
+    await TodoPreferences().setTodos(todos);
   }
 
   Future<List<Todo>> loadTodo() async {
-    return await UserSimplePreferences()
+    return await TodoPreferences()
         .getTodos()
         .then((List<Todo> tempTodos) => todos = tempTodos);
   }
@@ -150,18 +135,50 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+}
+
+class _TodoList extends StatelessWidget {
+  const _TodoList({
+    Key? key,
+    required this.todos,
+    required this.filterStatus,
+    required this.todoFilteredCount,
+    required this.todoFilteredList,
+    required this.updateTodoStatus,
+    required this.deleteTodo,
+  }) : super(key: key);
+
+  final List<Todo> todos;
+  final Filter filterStatus;
+  final int todoFilteredCount;
+  final List<Todo> todoFilteredList;
+  final Function updateTodoStatus;
+  final Function deleteTodo;
 
   @override
-  void initState() {
-    super.initState();
-    setState(() {
-      loadTodo();
-    });
+  Widget build(BuildContext context) {
+    return Flexible(
+        child: todos.isNotEmpty
+            ? ListView.builder(
+                itemCount: filterStatus == Filter.all
+                    ? todos.length
+                    : todoFilteredCount,
+                itemBuilder: (context, index) {
+                  return TodoWidget(
+                    todo: filterStatus == Filter.all
+                        ? todos[index]
+                        : todoFilteredList[index],
+                    updateStatusCallback: updateTodoStatus,
+                    deleteCallback: deleteTodo,
+                  );
+                },
+              )
+            : const Text('No todo\'s'));
   }
 }
 
-class _CompletedButton extends StatelessWidget {
-  const _CompletedButton({
+class _FilterCompletedButton extends StatelessWidget {
+  const _FilterCompletedButton({
     Key? key,
     required this.filterStatus,
     required this.filterTodo,
@@ -184,8 +201,8 @@ class _CompletedButton extends StatelessWidget {
   }
 }
 
-class _ActiveButton extends StatelessWidget {
-  const _ActiveButton({
+class _FilterActiveButton extends StatelessWidget {
+  const _FilterActiveButton({
     Key? key,
     required this.filterStatus,
     required this.filterTodo,
@@ -208,8 +225,8 @@ class _ActiveButton extends StatelessWidget {
   }
 }
 
-class _AllButton extends StatelessWidget {
-  const _AllButton({
+class _FilterAllButton extends StatelessWidget {
+  const _FilterAllButton({
     Key? key,
     required this.filterStatus,
     required this.filterTodo,

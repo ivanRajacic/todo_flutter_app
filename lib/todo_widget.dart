@@ -6,12 +6,12 @@ class TodoWidget extends StatefulWidget {
   final Todo todo;
   final Function updateStatusCallback;
   final Function deleteCallback;
-  const TodoWidget(
-      {Key? key,
-      required this.todo,
-      required this.updateStatusCallback,
-      required this.deleteCallback})
-      : super(key: key);
+  const TodoWidget({
+    Key? key,
+    required this.todo,
+    required this.updateStatusCallback,
+    required this.deleteCallback,
+  }) : super(key: key);
 
   @override
   State<TodoWidget> createState() => _TodoWidgetState();
@@ -23,7 +23,7 @@ class _TodoWidgetState extends State<TodoWidget> {
     return Row(
       children: [
         _CheckBox(
-          widget: widget,
+          isChecked: widget.todo.isChecked,
           updateIsChecked: updateIsChecked,
         ),
         Expanded(
@@ -32,14 +32,22 @@ class _TodoWidgetState extends State<TodoWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _Title(widget: widget),
+              _Title(title: widget.todo.title),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    _Date(widget: widget),
-                    _Separator(widget: widget),
-                    _Priority(widget: widget),
+                    _Date(
+                      date: widget.todo.date,
+                      isChecked: widget.todo.isChecked,
+                    ),
+                    _Separator(
+                      isChecked: widget.todo.isChecked,
+                    ),
+                    _Priority(
+                      priority: widget.todo.priority,
+                      isChecked: widget.todo.isChecked,
+                    ),
                   ],
                 ),
               )
@@ -110,11 +118,11 @@ class _TodoWidgetState extends State<TodoWidget> {
 class _CheckBox extends StatelessWidget {
   const _CheckBox({
     Key? key,
-    required this.widget,
+    required this.isChecked,
     required this.updateIsChecked,
   }) : super(key: key);
 
-  final TodoWidget widget;
+  final bool isChecked;
   final void Function(bool?) updateIsChecked;
 
   @override
@@ -122,7 +130,7 @@ class _CheckBox extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 4.0),
       child: Checkbox(
-        value: widget.todo.isChecked,
+        value: isChecked,
         onChanged: updateIsChecked,
       ),
     );
@@ -132,17 +140,19 @@ class _CheckBox extends StatelessWidget {
 class _Priority extends StatelessWidget {
   const _Priority({
     Key? key,
-    required this.widget,
+    required this.priority,
+    required this.isChecked,
   }) : super(key: key);
 
-  final TodoWidget widget;
+  final String priority;
+  final bool isChecked;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      widget.todo.priority,
+      priority,
       style: TextStyle(
-        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        decoration: isChecked ? TextDecoration.lineThrough : null,
         color: Colors.grey,
       ),
     );
@@ -152,17 +162,17 @@ class _Priority extends StatelessWidget {
 class _Separator extends StatelessWidget {
   const _Separator({
     Key? key,
-    required this.widget,
+    required this.isChecked,
   }) : super(key: key);
 
-  final TodoWidget widget;
+  final bool isChecked;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       ' * ',
       style: TextStyle(
-        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        decoration: isChecked ? TextDecoration.lineThrough : null,
         color: Colors.grey,
       ),
     );
@@ -172,19 +182,21 @@ class _Separator extends StatelessWidget {
 class _Date extends StatelessWidget {
   const _Date({
     Key? key,
-    required this.widget,
+    required this.isChecked,
+    required this.date,
   }) : super(key: key);
 
-  final TodoWidget widget;
+  final bool isChecked;
+  final String date;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      widget.todo.date,
+      date,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        decoration: widget.todo.isChecked ? TextDecoration.lineThrough : null,
+        decoration: isChecked ? TextDecoration.lineThrough : null,
         color: Colors.grey,
       ),
     );
@@ -194,17 +206,17 @@ class _Date extends StatelessWidget {
 class _Title extends StatelessWidget {
   const _Title({
     Key? key,
-    required this.widget,
+    required this.title,
   }) : super(key: key);
 
-  final TodoWidget widget;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
-        widget.todo.title,
+        title,
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(

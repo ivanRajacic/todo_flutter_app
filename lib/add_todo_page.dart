@@ -49,9 +49,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 _TitleField(nameController: _titleController),
                 _DateField(dateController: _dateController),
                 _PriorityField(
-                    selectedPriority: _selectedPriority,
-                    priorities: _priorities,
-                    updatePriority: updatePriority),
+                  selectedPriority: _selectedPriority,
+                  priorities: _priorities,
+                  updatePriority: updatePriority,
+                ),
                 _AddButton(
                   passCardData: passCardData,
                 ),
@@ -176,10 +177,9 @@ class _DateFieldState extends State<_DateField> {
         lastDate: now.add(const Duration(days: 365 * 30)),
       );
 
+      if (_selectedDate == null) return;
+
       setState(() {
-        if (_selectedDate == null) {
-          return;
-        }
         widget._dateController.text = formatter.format(_selectedDate!);
       });
     }
@@ -256,22 +256,19 @@ class _AddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: SizedBox(
-        width: double.infinity,
-        height: 60.0,
-        child: ElevatedButton(
-          onPressed: _passCardData,
-          style: ElevatedButton.styleFrom(
-            primary: Colors.red,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
-          ),
-          child: const Text(
-            'Add',
-            style: TextStyle(
-              fontSize: 20.0,
-              color: Colors.white,
-            ),
+      child: ElevatedButton(
+        onPressed: _passCardData,
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+          minimumSize: const Size.fromHeight(60.0),
+        ),
+        child: const Text(
+          'Add',
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
           ),
         ),
       ),
