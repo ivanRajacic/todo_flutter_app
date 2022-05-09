@@ -87,15 +87,17 @@ class _HomePageState extends State<HomePage> {
   int get todoCompletedCount =>
       todos.where((todo) => todo.isChecked == true).length;
 
-  int get todoFilteredCount => todoFilteredList.length;
-
   List<Todo> get todoFilteredList =>
       todos.where((todo) => todo.isChecked == showCompleted).toList();
+
+  int get todoFilteredCount => todoFilteredList.length;
 
   void updateTodoStatus(int hashCode) {
     setState(() {
       int index = todos.indexWhere((todo) => todo.hashCode == hashCode);
-      todos[index] = todos[index].copyWith(isChecked: !todos[index].isChecked);
+      todos[index] = todos[index].copyWith(
+        isChecked: !todos[index].isChecked,
+      );
     });
   }
 
