@@ -24,9 +24,8 @@ class TodoPreferences {
     List<String> stringTodos = [];
     List<Todo> todos = [];
 
-    if (preferences.getStringList(_keyTodo) == null) {
-      return todos;
-    }
+    if (preferences.getStringList(_keyTodo) == null) return todos;
+
     stringTodos = preferences.getStringList(_keyTodo)!;
     for (var strTodo in stringTodos) {
       todos.add(Todo.fromJson(jsonDecode(strTodo)));
