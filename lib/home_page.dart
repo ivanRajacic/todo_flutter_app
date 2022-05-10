@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Todo> todos = [];
+  final ValueNotifier<bool> finishedLoading = ValueNotifier<bool>(false);
 
   Filter filterStatus = Filter.all;
   bool showCompleted = false;
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
                         _Counter(
                           todoCompletedCount: todoCompletedCount,
                           todoCount: todoCount,
+                          finishedLoading: finishedLoading,
                         ),
                         Row(
                           children: [
@@ -76,6 +78,7 @@ class _HomePageState extends State<HomePage> {
               deleteTodo: deleteTodo,
               loadTodo: loadTodo,
               setTodo: setTodo,
+              finishedLoading: finishedLoading,
             ),
           ]),
         ),
@@ -149,7 +152,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _TodoList extends StatefulWidget {
+class _TodoList extends StatelessWidget {
   const _TodoList({
     Key? key,
     required this.filterStatus,
@@ -159,6 +162,7 @@ class _TodoList extends StatefulWidget {
     required this.deleteTodo,
     required this.loadTodo,
     required this.setTodo,
+    required this.finishedLoading,
   }) : super(key: key);
 
   final Filter filterStatus;
@@ -168,35 +172,30 @@ class _TodoList extends StatefulWidget {
   final Function deleteTodo;
   final Function loadTodo;
   final Function setTodo;
-
-  @override
-  State<_TodoList> createState() => _TodoListState();
-}
-
-class _TodoListState extends State<_TodoList> {
-  List<Todo> todos = [];
+  final ValueNotifier<bool> finishedLoading;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: widget.loadTodo(),
+      future: loadTodo(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          todos = snapshot.data as List<Todo>;
-          widget.setTodo(todos);
+          List<Todo> todos = snapshot.data as List<Todo>;
+          setTodo(todos);
+          // finishedLoading.value = true;
           return (Flexible(
               child: todos.isNotEmpty
                   ? ListView.builder(
-                      itemCount: widget.filterStatus == Filter.all
+                      itemCount: filterStatus == Filter.all
                           ? todos.length
-                          : widget.todoFilteredCount,
+                          : todoFilteredCount,
                       itemBuilder: (context, index) {
                         return TodoWidget(
-                          todo: widget.filterStatus == Filter.all
+                          todo: filterStatus == Filter.all
                               ? todos[index]
-                              : widget.todoFilteredList[index],
-                          updateStatusCallback: widget.updateTodoStatus,
-                          deleteCallback: widget.deleteTodo,
+                              : todoFilteredList[index],
+                          updateStatusCallback: updateTodoStatus,
+                          deleteCallback: deleteTodo,
                         );
                       },
                     )
@@ -246,19 +245,25 @@ class _Counter extends StatelessWidget {
     Key? key,
     required this.todoCompletedCount,
     required this.todoCount,
+    required this.finishedLoading,
   }) : super(key: key);
 
   final int todoCompletedCount;
   final int todoCount;
+  final ValueNotifier<bool> finishedLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      '$todoCompletedCount' ' of ' '$todoCount',
-      style: const TextStyle(
-        color: Colors.grey,
-      ),
-    );
+    return ValueListenableBuilder<bool>(
+        valueListenable: finishedLoading,
+        builder: (context, finishedLoading, child) {
+          return Text(
+            '$todoCompletedCount' ' of ' '$todoCount',
+            style: const TextStyle(
+              color: Colors.grey,
+            ),
+          );
+        });
   }
 }
 
