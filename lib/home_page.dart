@@ -39,8 +39,6 @@ class _HomePageState extends State<HomePage> {
                         _Counter(
                           todoCompletedCount: todoCompletedCount,
                           todoCount: todoCount,
-                          loadTodo: loadTodo,
-                          setTodo: setTodo,
                         ),
                         Row(
                           children: [
@@ -248,35 +246,19 @@ class _Counter extends StatelessWidget {
     Key? key,
     required this.todoCompletedCount,
     required this.todoCount,
-    required this.loadTodo,
-    required this.setTodo,
   }) : super(key: key);
 
   final int todoCompletedCount;
   final int todoCount;
-  final Function loadTodo;
-  final Function setTodo;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: loadTodo(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            setTodo(snapshot.data as List<Todo>);
-            print((snapshot.data as List<Todo>).length);
-            return Text(
-              '$todoCompletedCount' ' of ' '$todoCount',
-              style: const TextStyle(
-                color: Colors.grey,
-              ),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
+    return Text(
+      '$todoCompletedCount' ' of ' '$todoCount',
+      style: const TextStyle(
+        color: Colors.grey,
+      ),
+    );
   }
 }
 
