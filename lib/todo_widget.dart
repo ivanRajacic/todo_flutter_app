@@ -4,12 +4,12 @@ import 'todo.dart';
 
 class TodoWidget extends StatefulWidget {
   final Todo todo;
-  final Function updateStatusCallback;
+  final Function updateTodoCallback;
   final Function deleteCallback;
   const TodoWidget({
     Key? key,
     required this.todo,
-    required this.updateStatusCallback,
+    required this.updateTodoCallback,
     required this.deleteCallback,
   }) : super(key: key);
 
@@ -68,12 +68,12 @@ class _TodoWidgetState extends State<TodoWidget> {
 
   void updateIsChecked(bool? b) {
     setState(() {
-      widget.updateStatusCallback(widget.todo.hashCode);
+      widget.updateTodoCallback(widget.todo);
     });
   }
 
   void deleteTodo(BuildContext context) {
-    widget.deleteCallback(widget.todo.hashCode);
+    widget.deleteCallback(widget.todo);
     Navigator.pop(context);
     const snackBar = SnackBar(
       content: Text('Todo card deleted successfully!'),

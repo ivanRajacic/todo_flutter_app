@@ -51,10 +51,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
                 _PriorityField(
                   selectedPriority: _selectedPriority,
                   priorities: _priorities,
-                  updatePriority: updatePriority,
+                  onUpdatePriority: updatePriority,
                 ),
                 _AddButton(
-                  passCardData: passCardData,
+                  onPassTodoData: passTodoData,
                 ),
               ],
             ),
@@ -70,7 +70,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
     });
   }
 
-  void passCardData() {
+  void passTodoData() {
     if (_selectedPriority != null) {
       Todo data = Todo(
         title: _titleController.text,
@@ -191,10 +191,10 @@ class _PriorityField extends StatelessWidget {
     Key? key,
     required String? selectedPriority,
     required List<String> priorities,
-    required void Function(String? newValue) updatePriority,
+    required void Function(String? newValue) onUpdatePriority,
   })  : _selectedPriority = selectedPriority,
         _priorities = priorities,
-        _updatePriority = updatePriority,
+        _updatePriority = onUpdatePriority,
         super(key: key);
 
   final String? _selectedPriority;
@@ -246,8 +246,8 @@ class _PriorityField extends StatelessWidget {
 class _AddButton extends StatelessWidget {
   const _AddButton({
     Key? key,
-    required void Function() passCardData,
-  })  : _passCardData = passCardData,
+    required void Function() onPassTodoData,
+  })  : _passCardData = onPassTodoData,
         super(key: key);
 
   final void Function() _passCardData;

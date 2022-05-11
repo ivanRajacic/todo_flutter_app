@@ -6,17 +6,18 @@ import 'todo_widget.dart';
 enum Filter { all, active, completed }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final List<Todo> todos;
+  const HomePage({Key? key, required this.todos}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Todo> todos = [];
-  final ValueNotifier<bool> finishedLoading = ValueNotifier<bool>(false);
+  final preferences = TodoPreferences();
 
-  Filter filterStatus = Filter.all;
+  List<Todo> todos = [];
+  Filter selectedFilter = Filter.all;
   bool showCompleted = false;
 
   @override
@@ -40,27 +41,26 @@ class _HomePageState extends State<HomePage> {
                         _Counter(
                           todoCompletedCount: todoCompletedCount,
                           todoCount: todoCount,
-                          finishedLoading: finishedLoading,
                         ),
                         Row(
                           children: [
                             _FilterButton(
-                              filterName: 'All',
-                              filterNameStatus: Filter.all,
-                              filterCurrentStatus: filterStatus,
-                              filterTodo: filterTodo,
+                              text: 'All',
+                              filterType: Filter.all,
+                              selectedFilter: selectedFilter,
+                              onPressed: filterTodo,
                             ),
                             _FilterButton(
-                              filterName: 'Active',
-                              filterNameStatus: Filter.active,
-                              filterCurrentStatus: filterStatus,
-                              filterTodo: filterTodo,
+                              text: 'Active',
+                              filterType: Filter.active,
+                              selectedFilter: selectedFilter,
+                              onPressed: filterTodo,
                             ),
                             _FilterButton(
-                              filterName: 'Completed',
-                              filterNameStatus: Filter.completed,
-                              filterCurrentStatus: filterStatus,
-                              filterTodo: filterTodo,
+                              text: 'Completed',
+                              filterType: Filter.completed,
+                              selectedFilter: selectedFilter,
+                              onPressed: filterTodo,
                             ),
                           ],
                         ),
@@ -71,14 +71,12 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             _TodoList(
-              filterStatus: filterStatus,
+              filterStatus: selectedFilter,
               todoFilteredCount: todoFilteredCount,
               todoFilteredList: todoFilteredList,
-              updateTodoStatus: updateTodoStatus,
-              deleteTodo: deleteTodo,
-              loadTodo: loadTodo,
-              setTodo: setTodo,
-              finishedLoading: finishedLoading,
+              onUpdateTodo: updateTodo,
+              onDeleteTodo: deleteTodo,
+              todos: todos,
             ),
           ]),
         ),
@@ -102,23 +100,22 @@ class _HomePageState extends State<HomePage> {
 
   int get todoFilteredCount => todoFilteredList.length;
 
-  void updateTodoStatus(int hashCode) async {
+  void updateTodo(Todo todo) async {
     setState(() {
-      int index = todos.indexWhere((todo) => todo.hashCode == hashCode);
+      int index = todos.indexOf(todo);
       todos[index] = todos[index].copyWith(
         isChecked: !todos[index].isChecked,
       );
     });
-    await TodoPreferences().setTodos(todos);
+    preferences.setTodos(todos);
   }
 
-  void deleteTodo(int hashCode) async {
+  void deleteTodo(Todo todo) async {
     setState(() {
-      int index = todos.indexWhere((todo) => todo.hashCode == hashCode);
-      todos.removeAt(index);
+      todos.remove(todo);
     });
 
-    await TodoPreferences().setTodos(todos);
+    preferences.setTodos(todos);
   }
 
   void addTodo() async {
@@ -128,27 +125,29 @@ class _HomePageState extends State<HomePage> {
       todos.add(result as Todo);
     });
 
-    await TodoPreferences().setTodos(todos);
+    preferences.setTodos(todos);
   }
 
-  Future<List<Todo>> loadTodo() async {
-    return await TodoPreferences().getTodos();
+  void setTodo(List<Todo> todos) {
+    this.todos = todos;
   }
 
-  void filterTodo(Filter filterStatus) {
+  void filterTodo(Filter filter) {
     setState(() {
-      this.filterStatus = filterStatus;
-      if (filterStatus == Filter.active) {
+      selectedFilter = filter;
+      if (filter == Filter.active) {
         showCompleted = false;
       }
-      if (filterStatus == Filter.completed) {
+      if (filter == Filter.completed) {
         showCompleted = true;
       }
     });
   }
 
-  void setTodo(List<Todo> todos) {
-    this.todos = todos;
+  @override
+  void initState() {
+    setTodo(widget.todos);
+    super.initState();
   }
 }
 
@@ -158,82 +157,62 @@ class _TodoList extends StatelessWidget {
     required this.filterStatus,
     required this.todoFilteredCount,
     required this.todoFilteredList,
-    required this.updateTodoStatus,
-    required this.deleteTodo,
-    required this.loadTodo,
-    required this.setTodo,
-    required this.finishedLoading,
+    required this.onUpdateTodo,
+    required this.onDeleteTodo,
+    required this.todos,
   }) : super(key: key);
 
   final Filter filterStatus;
   final int todoFilteredCount;
   final List<Todo> todoFilteredList;
-  final Function updateTodoStatus;
-  final Function deleteTodo;
-  final Function loadTodo;
-  final Function setTodo;
-  final ValueNotifier<bool> finishedLoading;
+  final Function onUpdateTodo;
+  final Function onDeleteTodo;
+  final List<Todo> todos;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: loadTodo(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<Todo> todos = snapshot.data as List<Todo>;
-          setTodo(todos);
-          // finishedLoading.value = true;
-          return (Flexible(
-              child: todos.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: filterStatus == Filter.all
-                          ? todos.length
-                          : todoFilteredCount,
-                      itemBuilder: (context, index) {
-                        return TodoWidget(
-                          todo: filterStatus == Filter.all
-                              ? todos[index]
-                              : todoFilteredList[index],
-                          updateStatusCallback: updateTodoStatus,
-                          deleteCallback: deleteTodo,
-                        );
-                      },
-                    )
-                  : const Text('No todo\'s')));
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    return Flexible(
+        child: todos.isNotEmpty
+            ? ListView.builder(
+                itemCount: filterStatus == Filter.all
+                    ? todos.length
+                    : todoFilteredCount,
+                itemBuilder: (context, index) {
+                  return TodoWidget(
+                    todo: filterStatus == Filter.all
+                        ? todos[index]
+                        : todoFilteredList[index],
+                    updateTodoCallback: onUpdateTodo,
+                    deleteCallback: onDeleteTodo,
+                  );
+                },
+              )
+            : const Text('No todo\'s'));
   }
 }
 
 class _FilterButton extends StatelessWidget {
   const _FilterButton({
     Key? key,
-    required this.filterTodo,
-    required this.filterName,
-    required this.filterNameStatus,
-    required this.filterCurrentStatus,
+    required this.onPressed,
+    required this.text,
+    required this.filterType,
+    required this.selectedFilter,
   }) : super(key: key);
 
-  final Function(Filter filterStatus) filterTodo;
-  final String filterName;
-  final Filter filterNameStatus;
-  final Filter filterCurrentStatus;
+  final Function(Filter filterStatus) onPressed;
+  final String text;
+  final Filter filterType;
+  final Filter selectedFilter;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () => filterTodo(filterNameStatus),
+      onPressed: () => onPressed(filterType),
       child: Text(
-        filterName,
+        text,
         style: TextStyle(
-          color: filterCurrentStatus == filterNameStatus
-              ? Colors.red
-              : Colors.black,
+          color: selectedFilter == filterType ? Colors.red : Colors.black,
         ),
       ),
     );
@@ -245,25 +224,19 @@ class _Counter extends StatelessWidget {
     Key? key,
     required this.todoCompletedCount,
     required this.todoCount,
-    required this.finishedLoading,
   }) : super(key: key);
 
   final int todoCompletedCount;
   final int todoCount;
-  final ValueNotifier<bool> finishedLoading;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-        valueListenable: finishedLoading,
-        builder: (context, finishedLoading, child) {
-          return Text(
-            '$todoCompletedCount' ' of ' '$todoCount',
-            style: const TextStyle(
-              color: Colors.grey,
-            ),
-          );
-        });
+    return Text(
+      '$todoCompletedCount' ' of ' '$todoCount',
+      style: const TextStyle(
+        color: Colors.grey,
+      ),
+    );
   }
 }
 
