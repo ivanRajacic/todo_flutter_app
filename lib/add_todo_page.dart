@@ -154,7 +154,9 @@ class _DateFieldState extends State<_DateField> {
           labelStyle: const TextStyle(
             color: Colors.grey,
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(
               color: Colors.red,
